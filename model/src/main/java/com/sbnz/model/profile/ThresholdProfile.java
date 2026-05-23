@@ -13,6 +13,8 @@ public class ThresholdProfile extends BaseFact {
     private int highStressThreshold;
     private int lowEfficacyThreshold;
     private int maxMissedObligations;
+    private int exhaustionIndicatorThreshold;
+    private int cynicismIndicatorThreshold;
 
     public ThresholdProfile() {
     }
@@ -23,7 +25,9 @@ public class ThresholdProfile extends BaseFact {
                             double minSleepHours,
                             int highStressThreshold,
                             int lowEfficacyThreshold,
-                            int maxMissedObligations) {
+                            int maxMissedObligations,
+                            int exhaustionIndicatorThreshold,
+                            int cynicismIndicatorThreshold) {
         super(studentId);
         this.profileType = profileType;
         this.academicPeriod = academicPeriod;
@@ -31,6 +35,8 @@ public class ThresholdProfile extends BaseFact {
         this.highStressThreshold = highStressThreshold;
         this.lowEfficacyThreshold = lowEfficacyThreshold;
         this.maxMissedObligations = maxMissedObligations;
+        this.exhaustionIndicatorThreshold = exhaustionIndicatorThreshold;
+        this.cynicismIndicatorThreshold = cynicismIndicatorThreshold;
     }
 
     public StudentProfile getProfileType() {
@@ -79,5 +85,21 @@ public class ThresholdProfile extends BaseFact {
 
     public void setMaxMissedObligations(int maxMissedObligations) {
         this.maxMissedObligations = maxMissedObligations;
+    }
+
+    public int getExhaustionIndicatorThreshold() {
+        return exhaustionIndicatorThreshold;
+    }
+
+    public void setExhaustionIndicatorThreshold(int exhaustionIndicatorThreshold) {
+        this.exhaustionIndicatorThreshold = exhaustionIndicatorThreshold;
+    }
+
+    public int getCynicismIndicatorThreshold() {
+        return cynicismIndicatorThreshold;
+    }
+
+    public void setCynicismIndicatorThreshold(int cynicismIndicatorThreshold) {
+        this.cynicismIndicatorThreshold = cynicismIndicatorThreshold;
     }
 }

@@ -3,6 +3,7 @@ package com.sbnz.model.events;
 import java.util.Date;
 
 import com.sbnz.model.enums.CopingStrategy;
+import com.sbnz.model.enums.SleepQuality;
 
 public class DailyCheckInEvent {
 
@@ -12,7 +13,7 @@ public class DailyCheckInEvent {
     private int dayIndex;
 
     private double sleepHours;
-    private String sleepQuality;
+    private SleepQuality sleepQuality;
 
     private int fatigue;
     private int stress;
@@ -24,6 +25,8 @@ public class DailyCheckInEvent {
     private boolean lowRecovery;
 
     private int supportScore;
+    private int overload;
+    private int studyMeaning;
     private CopingStrategy copingStrategy;
 
     public DailyCheckInEvent() {
@@ -33,7 +36,7 @@ public class DailyCheckInEvent {
                              Date timestamp,
                              int dayIndex,
                              double sleepHours,
-                             String sleepQuality,
+                             SleepQuality sleepQuality,
                              int fatigue,
                              int stress,
                              int motivation,
@@ -42,6 +45,8 @@ public class DailyCheckInEvent {
                              boolean missedObligation,
                              boolean lowRecovery,
                              int supportScore,
+                             int overload,
+                             int studyMeaning,
                              CopingStrategy copingStrategy) {
         this.studentId = studentId;
         this.timestamp = timestamp;
@@ -56,6 +61,8 @@ public class DailyCheckInEvent {
         this.missedObligation = missedObligation;
         this.lowRecovery = lowRecovery;
         this.supportScore = supportScore;
+        this.overload = overload;
+        this.studyMeaning = studyMeaning;
         this.copingStrategy = copingStrategy;
     }
 
@@ -91,11 +98,11 @@ public class DailyCheckInEvent {
         this.sleepHours = sleepHours;
     }
 
-    public String getSleepQuality() {
+    public SleepQuality getSleepQuality() {
         return sleepQuality;
     }
 
-    public void setSleepQuality(String sleepQuality) {
+    public void setSleepQuality(SleepQuality sleepQuality) {
         this.sleepQuality = sleepQuality;
     }
 
@@ -161,6 +168,22 @@ public class DailyCheckInEvent {
 
     public void setSupportScore(int supportScore) {
         this.supportScore = supportScore;
+    }
+
+    public int getOverload() {
+        return overload;
+    }
+
+    public void setOverload(int overload) {
+        this.overload = overload;
+    }
+
+    public int getStudyMeaning() {
+        return studyMeaning;
+    }
+
+    public void setStudyMeaning(int studyMeaning) {
+        this.studyMeaning = studyMeaning;
     }
 
     public CopingStrategy getCopingStrategy() {
