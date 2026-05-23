@@ -1,0 +1,136 @@
+package rules
+
+import com.sbnz.model.indicators.ExhaustionIndicator;
+import com.sbnz.model.indicators.CynicismIndicator;
+import com.sbnz.model.indicators.ReducedEfficacyIndicator;
+
+import com.sbnz.model.patterns.SustainedStressPattern;
+import com.sbnz.model.patterns.SustainedPoorSleepPattern;
+import com.sbnz.model.patterns.LowRecoveryPattern;
+import com.sbnz.model.patterns.AvoidancePattern;
+import com.sbnz.model.patterns.RepeatedLowMotivationPattern;
+import com.sbnz.model.patterns.NegativeTrend;
+import com.sbnz.model.patterns.BurnoutDevelopmentPattern;
+
+import com.sbnz.model.factors.LowSupportRiskFactor;
+import com.sbnz.model.factors.MaladaptiveCopingFactor;
+import com.sbnz.model.factors.ProtectiveSupportFactor;
+
+import com.sbnz.model.risks.ModerateBurnoutRisk;
+import com.sbnz.model.risks.HighBurnoutRisk;
+import com.sbnz.model.risks.SevereRiskPattern;
+import com.sbnz.model.risks.HighRiskWithSupportResources;
+import com.sbnz.model.risks.ModerateRiskWithProtectiveFactors;
+
+rule "Moderate risk from exhaustion and reduced efficacy"
+when
+    ExhaustionIndicator($sid : studentId)
+    ReducedEfficacyIndicator(studentId == $sid)
+    not ModerateBurnoutRisk(studentId == $sid)
+then
+    insert(new ModerateBurnoutRisk($sid));
+end
+
+rule "Moderate risk from exhaustion and cynicism"
+when
+    ExhaustionIndicator($sid : studentId)
+    CynicismIndicator(studentId == $sid)
+    not ModerateBurnoutRisk(studentId == $sid)
+then
+    insert(new ModerateBurnoutRisk($sid));
+end
+
+rule "High risk from three dimensions"
+when
+    ExhaustionIndicator($sid : studentId)
+    CynicismIndicator(studentId == $sid)
+    ReducedEfficacyIndicator(studentId == $sid)
+    not HighBurnoutRisk(studentId == $sid)
+then
+    insert(new HighBurnoutRisk($sid));
+end
+
+rule "Burnout development pattern"
+when
+    HighBurnoutRisk($sid : studentId)
+    SustainedStressPattern(studentId == $sid)
+    SustainedPoorSleepPattern(studentId == $sid)
+    not BurnoutDevelopmentPattern(studentId == $sid)
+then
+    insert(new BurnoutDevelopmentPattern($sid));
+end
+
+rule "Severe risk from burnout development and avoidance"
+when
+    BurnoutDevelopmentPattern($sid : studentId)
+    AvoidancePattern(studentId == $sid)
+    not SevereRiskPattern(studentId == $sid)
+then
+    insert(new SevereRiskPattern($sid));
+end
+
+rule "Severe risk from low support and maladaptive coping"
+when
+    HighBurnoutRisk($sid : studentId)
+    LowSupportRiskFactor(studentId == $sid)
+    MaladaptiveCopingFactor(studentId == $sid)
+    not SevereRiskPattern(studentId == $sid)
+then
+    insert(new SevereRiskPattern($sid));
+end
+
+rule "High risk with support resources"
+when
+    HighBurnoutRisk($sid : studentId)
+    ProtectiveSupportFactor(studentId == $sid)
+    not HighRiskWithSupportResources(studentId == $sid)
+then
+    insert(new HighRiskWithSupportResources($sid));
+end
+
+rule "Moderate risk with protective factors"
+when
+    ModerateBurnoutRisk($sid : studentId)
+    ProtectiveSupportFactor(studentId == $sid)
+    not ModerateRiskWithProtectiveFactors(studentId == $sid)
+then
+    insert(new ModerateRiskWithProtectiveFactors($sid));
+end
+
+rule "Severe risk from low recovery"
+when
+    HighBurnoutRisk($sid : studentId)
+    LowRecoveryPattern(studentId == $sid)
+    not SevereRiskPattern(studentId == $sid)
+then
+    insert(new SevereRiskPattern($sid));
+end
+
+rule "High risk from moderate risk, low motivation and avoidance"
+when
+    ModerateBurnoutRisk($sid : studentId)
+    RepeatedLowMotivationPattern(studentId == $sid)
+    AvoidancePattern(studentId == $sid)
+    not HighBurnoutRisk(studentId == $sid)
+then
+    insert(new HighBurnoutRisk($sid));
+end
+
+rule "High risk from moderate risk and negative trend"
+when
+    ModerateBurnoutRisk($sid : studentId)
+    NegativeTrend(studentId == $sid)
+    not HighBurnoutRisk(studentId == $sid)
+then
+    insert(new HighBurnoutRisk($sid));
+end
+
+rule "Severe risk from negative trend and low recovery"
+when
+    HighBurnoutRisk($sid : studentId)
+    NegativeTrend(studentId == $sid)
+    LowRecoveryPattern(studentId == $sid)
+    not SevereRiskPattern(studentId == $sid)
+then
+    insert(new SevereRiskPattern($sid));
+end

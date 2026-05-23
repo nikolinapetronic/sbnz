@@ -1,0 +1,115 @@
+package rules
+
+import com.sbnz.model.events.DailyCheckInEvent;
+import com.sbnz.model.events.ScoreSnapshotEvent;
+import com.sbnz.model.profile.ThresholdProfile;
+
+import com.sbnz.model.patterns.SustainedPoorSleepPattern;
+import com.sbnz.model.patterns.SustainedStressPattern;
+import com.sbnz.model.patterns.LowRecoveryPattern;
+import com.sbnz.model.patterns.AvoidancePattern;
+import com.sbnz.model.patterns.RepeatedLowMotivationPattern;
+import com.sbnz.model.patterns.AcademicGoalDeviationPattern;
+import com.sbnz.model.patterns.NegativeTrend;
+
+rule "Sustained poor sleep pattern"
+when
+    $t : ThresholdProfile($sid : studentId)
+    Number(intValue >= 4) from accumulate(
+        DailyCheckInEvent(studentId == $sid, sleepHours < $t.minSleepHours)
+            over window:time(7d),
+        count(1)
+    )
+    not SustainedPoorSleepPattern(studentId == $sid)
+then
+    insert(new SustainedPoorSleepPattern($sid));
+end
+
+rule "Sustained stress pattern"
+when
+    $t : ThresholdProfile($sid : studentId)
+    Number(doubleValue >= $t.highStressThreshold) from accumulate(
+        DailyCheckInEvent(studentId == $sid, $stress : stress)
+            over window:time(7d),
+        average($stress)
+    )
+    not SustainedStressPattern(studentId == $sid)
+then
+    insert(new SustainedStressPattern($sid));
+end
+
+rule "Low recovery pattern"
+when
+    $t : ThresholdProfile($sid : studentId)
+    Number(intValue >= 3) from accumulate(
+        DailyCheckInEvent(studentId == $sid, lowRecovery == true)
+            over window:time(7d),
+        count(1)
+    )
+    not LowRecoveryPattern(studentId == $sid)
+then
+    insert(new LowRecoveryPattern($sid));
+end
+
+rule "Avoidance pattern"
+when
+    $t : ThresholdProfile($sid : studentId)
+    Number(intValue >= $t.maxMissedObligations) from accumulate(
+        DailyCheckInEvent(studentId == $sid, missedObligation == true)
+            over window:time(10d),
+        count(1)
+    )
+    not AvoidancePattern(studentId == $sid)
+then
+    insert(new AvoidancePattern($sid));
+end
+
+rule "Repeated low motivation pattern"
+when
+    $t : ThresholdProfile($sid : studentId)
+    Number(intValue >= 4) from accumulate(
+        DailyCheckInEvent(studentId == $sid, motivation <= 3)
+            over window:time(7d),
+        count(1)
+    )
+    not RepeatedLowMotivationPattern(studentId == $sid)
+then
+    insert(new RepeatedLowMotivationPattern($sid));
+end
+
+rule "Academic goal deviation pattern"
+when
+    $t : ThresholdProfile($sid : studentId)
+    Number(intValue >= 3) from accumulate(
+        DailyCheckInEvent(studentId == $sid, efficacy <= $t.lowEfficacyThreshold)
+            over window:time(7d),
+        count(1)
+    )
+    not AcademicGoalDeviationPattern(studentId == $sid)
+then
+    insert(new AcademicGoalDeviationPattern($sid));
+end
+
+rule "Negative trend by efficacy"
+when
+    $s1 : ScoreSnapshotEvent($sid : studentId, $i1 : dayIndex, $eff1 : efficacyScore)
+    $s2 : ScoreSnapshotEvent(studentId == $sid, $i2 : dayIndex, $eff2 : efficacyScore)
+    eval($i2 == $i1 + 1 && $eff2 < $eff1)
+    $s3 : ScoreSnapshotEvent(studentId == $sid, $i3 : dayIndex, $eff3 : efficacyScore)
+    eval($i3 == $i2 + 1 && $eff3 < $eff2)
+    not NegativeTrend(studentId == $sid)
+then
+    insert(new NegativeTrend($sid));
+end
+
+rule "Negative trend by exhaustion"
+when
+    $s1 : ScoreSnapshotEvent($sid : studentId, $i1 : dayIndex, $ex1 : exhaustionScore)
+    $s2 : ScoreSnapshotEvent(studentId == $sid, $i2 : dayIndex, $ex2 : exhaustionScore)
+    eval($i2 == $i1 + 1 && $ex2 > $ex1)
+    $s3 : ScoreSnapshotEvent(studentId == $sid, $i3 : dayIndex, $ex3 : exhaustionScore)
+    eval($i3 == $i2 + 1 && $ex3 > $ex2)
+    not NegativeTrend(studentId == $sid)
+then
+    insert(new NegativeTrend($sid));
+end

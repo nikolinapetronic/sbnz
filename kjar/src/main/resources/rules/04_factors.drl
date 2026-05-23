@@ -1,0 +1,44 @@
+package rules
+
+import com.sbnz.model.enums.CopingStrategy;
+
+import com.sbnz.model.events.DailyCheckInEvent;
+
+import com.sbnz.model.profile.ThresholdProfile;
+
+import com.sbnz.model.factors.LowSupportRiskFactor;
+import com.sbnz.model.factors.MaladaptiveCopingFactor;
+import com.sbnz.model.factors.ProtectiveSupportFactor;
+
+rule "Low support risk factor"
+when
+    $t : ThresholdProfile($sid : studentId)
+    $e : DailyCheckInEvent(studentId == $sid, stress >= $t.highStressThreshold, supportScore <= 3)
+    not LowSupportRiskFactor(studentId == $sid)
+then
+    insert(new LowSupportRiskFactor($sid));
+end
+
+rule "Maladaptive coping factor"
+when
+    $e : DailyCheckInEvent($sid : studentId,
+        copingStrategy == CopingStrategy.AVOIDANCE
+        || copingStrategy == CopingStrategy.PROCRASTINATION
+        || copingStrategy == CopingStrategy.DENIAL
+    )
+    not MaladaptiveCopingFactor(studentId == $sid)
+then
+    insert(new MaladaptiveCopingFactor($sid));
+end
+
+rule "Protective support factor"
+when
+    $e : DailyCheckInEvent($sid : studentId, supportScore >= 8,
+        copingStrategy == CopingStrategy.PLANNING
+        || copingStrategy == CopingStrategy.ACTIVE_PROBLEM_SOLVING
+        || copingStrategy == CopingStrategy.SEEKING_SUPPORT
+    )
+    not ProtectiveSupportFactor(studentId == $sid)
+then
+    insert(new ProtectiveSupportFactor($sid));
+end

@@ -1,0 +1,14 @@
+package rules
+
+import com.sbnz.model.events.DailyCheckInEvent;
+import com.sbnz.model.events.ScoreSnapshotEvent;
+
+declare DailyCheckInEvent
+    @role( event )
+    @timestamp( timestamp )
+end
+
+declare ScoreSnapshotEvent
+    @role( event )
+    @timestamp( timestamp )
+end

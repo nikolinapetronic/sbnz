@@ -1,0 +1,153 @@
+package rules
+
+import com.sbnz.model.enums.RiskLevel;
+import com.sbnz.model.enums.RecommendationType;
+
+import com.sbnz.model.risks.ModerateBurnoutRisk;
+import com.sbnz.model.risks.HighBurnoutRisk;
+import com.sbnz.model.risks.SevereRiskPattern;
+import com.sbnz.model.risks.HighRiskWithSupportResources;
+import com.sbnz.model.risks.ModerateRiskWithProtectiveFactors;
+import com.sbnz.model.risks.RiskAssessment;
+import com.sbnz.model.risks.DominantDimension;
+
+rule "Create severe risk assessment"
+salience -10
+when
+    SevereRiskPattern($sid : studentId)
+    $d : DominantDimension(studentId == $sid)
+    not RiskAssessment(studentId == $sid)
+then
+    RiskAssessment assessment = new RiskAssessment($sid, RiskLevel.SEVERE_RISK);
+    assessment.setDominantDimensions($d.getValue());
+
+    assessment.addEvidence("SevereRiskPattern");
+    assessment.addEvidence("Dominantne dimenzije: " + $d.getValue());
+    assessment.addEvidence("Aktivirani su indikatori i vremenski ili pogoršavajući obrasci visokog rizika.");
+
+    assessment.addRecommendation(RecommendationType.REST_AND_RECOVERY);
+    assessment.addRecommendation(RecommendationType.STUDY_PLAN_RESTRUCTURING);
+    assessment.addRecommendation(RecommendationType.SEEK_ACADEMIC_SUPPORT);
+    assessment.addRecommendation(RecommendationType.SEEK_COUNSELING_SUPPORT);
+
+    assessment.setExplanation(
+        "Rizik je označen kao SEVERE_RISK jer su detektovane dominantne dimenzije: "
+        + $d.getValue()
+        + ", uz dodatne vremenske ili pogoršavajuće faktore kao što su loš san, visok stres, slab oporavak, negativan trend, niska podrška ili maladaptivne coping strategije."
+    );
+
+    insert(assessment);
+end
+
+rule "Create high risk with support assessment"
+salience -15
+when
+    HighRiskWithSupportResources($sid : studentId)
+    $d : DominantDimension(studentId == $sid)
+    not SevereRiskPattern(studentId == $sid)
+    not RiskAssessment(studentId == $sid)
+then
+    RiskAssessment assessment = new RiskAssessment($sid, RiskLevel.HIGH_RISK);
+    assessment.setDominantDimensions($d.getValue());
+
+    assessment.addEvidence("HighRiskWithSupportResourcesPattern");
+    assessment.addEvidence("Dominantne dimenzije: " + $d.getValue());
+    assessment.addEvidence("Prisutan je visok rizik, ali i zaštitni faktori.");
+
+    assessment.addRecommendation(RecommendationType.REST_AND_RECOVERY);
+    assessment.addRecommendation(RecommendationType.STUDY_PLAN_RESTRUCTURING);
+    assessment.addRecommendation(RecommendationType.MONITOR_NEXT_7_DAYS);
+
+    assessment.setExplanation(
+        "Rizik je označen kao HIGH_RISK na osnovu dominantnih dimenzija: "
+        + $d.getValue()
+        + ". Prisustvo zaštitnih faktora ne poništava rizik, već se koristi za blaže i usmjerenije preporuke."
+    );
+
+    insert(assessment);
+end
+
+rule "Create high risk assessment"
+salience -20
+when
+    HighBurnoutRisk($sid : studentId)
+    $d : DominantDimension(studentId == $sid)
+    not SevereRiskPattern(studentId == $sid)
+    not HighRiskWithSupportResources(studentId == $sid)
+    not RiskAssessment(studentId == $sid)
+then
+    RiskAssessment assessment = new RiskAssessment($sid, RiskLevel.HIGH_RISK);
+    assessment.setDominantDimensions($d.getValue());
+
+    assessment.addEvidence("HighRiskPattern");
+    assessment.addEvidence("Dominantne dimenzije: " + $d.getValue());
+    assessment.addEvidence("Aktivirani su indikatori visokog rizika.");
+
+    assessment.addRecommendation(RecommendationType.REST_AND_RECOVERY);
+    assessment.addRecommendation(RecommendationType.STUDY_PLAN_RESTRUCTURING);
+    assessment.addRecommendation(RecommendationType.SEEK_ACADEMIC_SUPPORT);
+
+    assessment.setExplanation(
+        "Rizik je označen kao HIGH_RISK jer su detektovane izražene dominantne dimenzije: "
+        + $d.getValue()
+        + ", ili je umjeren rizik pojačan dodatnim obrascima kao što su niska motivacija, izbjegavanje obaveza ili negativan trend."
+    );
+
+    insert(assessment);
+end
+
+rule "Create moderate risk with protective factors assessment"
+salience -25
+when
+    ModerateRiskWithProtectiveFactors($sid : studentId)
+    $d : DominantDimension(studentId == $sid)
+    not HighBurnoutRisk(studentId == $sid)
+    not SevereRiskPattern(studentId == $sid)
+    not RiskAssessment(studentId == $sid)
+then
+    RiskAssessment assessment = new RiskAssessment($sid, RiskLevel.MODERATE_RISK);
+    assessment.setDominantDimensions($d.getValue());
+
+    assessment.addEvidence("ModerateRiskWithProtectiveFactorsPattern");
+    assessment.addEvidence("Dominantne dimenzije: " + $d.getValue());
+    assessment.addEvidence("Aktivirani su indikatori srednjeg rizika uz zaštitne faktore.");
+
+    assessment.addRecommendation(RecommendationType.MONITOR_NEXT_7_DAYS);
+
+    assessment.setExplanation(
+        "Rizik je umjeren na osnovu dominantnih dimenzija: "
+        + $d.getValue()
+        + ". Prisustvo zaštitnih faktora može pomoći u oporavku i praćenju stanja."
+    );
+
+    insert(assessment);
+end
+
+rule "Create moderate risk assessment"
+salience -30
+when
+    ModerateBurnoutRisk($sid : studentId)
+    $d : DominantDimension(studentId == $sid)
+    not HighBurnoutRisk(studentId == $sid)
+    not SevereRiskPattern(studentId == $sid)
+    not ModerateRiskWithProtectiveFactors(studentId == $sid)
+    not RiskAssessment(studentId == $sid)
+then
+    RiskAssessment assessment = new RiskAssessment($sid, RiskLevel.MODERATE_RISK);
+    assessment.setDominantDimensions($d.getValue());
+
+    assessment.addEvidence("ModerateRiskPattern");
+    assessment.addEvidence("Dominantne dimenzije: " + $d.getValue());
+    assessment.addEvidence("Aktivirane su dvije relevantne dimenzije ili blaži obrazac rizika.");
+
+    assessment.addRecommendation(RecommendationType.MONITOR_NEXT_7_DAYS);
+    assessment.addRecommendation(RecommendationType.REST_AND_RECOVERY);
+
+    assessment.setExplanation(
+        "Rizik je označen kao MODERATE_RISK jer su detektovane dominantne dimenzije: "
+        + $d.getValue()
+        + ". To ukazuje na djelimično izražen obrazac akademskog burnout rizika."
+    );
+
+    insert(assessment);
+end

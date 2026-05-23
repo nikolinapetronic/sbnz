@@ -1,0 +1,38 @@
+package rules
+
+import com.sbnz.model.profile.ThresholdProfile;
+
+import com.sbnz.model.scores.ExhaustionScore;
+import com.sbnz.model.scores.CynicismScore;
+import com.sbnz.model.scores.EfficacyScore;
+
+import com.sbnz.model.indicators.ExhaustionIndicator;
+import com.sbnz.model.indicators.CynicismIndicator;
+import com.sbnz.model.indicators.ReducedEfficacyIndicator;
+
+rule "Create exhaustion indicator"
+when
+    $t : ThresholdProfile($sid : studentId)
+    ExhaustionScore(studentId == $sid, value >= $t.exhaustionIndicatorThreshold)
+    not ExhaustionIndicator(studentId == $sid)
+then
+    insert(new ExhaustionIndicator($sid));
+end
+
+rule "Create cynicism indicator"
+when
+    $t : ThresholdProfile($sid : studentId)
+    CynicismScore(studentId == $sid, value >= $t.cynicismIndicatorThreshold)
+    not CynicismIndicator(studentId == $sid)
+then
+    insert(new CynicismIndicator($sid));
+end
+
+rule "Create reduced efficacy indicator"
+when
+    $t : ThresholdProfile($sid : studentId)
+    EfficacyScore(studentId == $sid, value <= $t.lowEfficacyThreshold)
+    not ReducedEfficacyIndicator(studentId == $sid)
+then
+    insert(new ReducedEfficacyIndicator($sid));
+end

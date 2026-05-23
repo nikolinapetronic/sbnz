@@ -1,0 +1,86 @@
+package rules
+
+import com.sbnz.model.enums.CopingStrategy;
+import com.sbnz.model.enums.SleepQuality;
+
+import com.sbnz.model.events.DailyCheckInEvent;
+import com.sbnz.model.profile.ThresholdProfile;
+
+import com.sbnz.model.scores.ExhaustionScore;
+import com.sbnz.model.scores.CynicismScore;
+import com.sbnz.model.scores.EfficacyScore;
+
+rule "Create exhaustion score"
+when
+    $t : ThresholdProfile($sid : studentId)
+    $e : DailyCheckInEvent(studentId == $sid)
+then
+    int score = 0;
+
+    if ($e.getSleepHours() < $t.getMinSleepHours()) {
+        score += 3;
+    }
+    if ($e.getSleepQuality() == SleepQuality.POOR) {
+        score += 1;
+    }
+    if ($e.getStress() >= $t.getHighStressThreshold()) {
+        score += 3;
+    }
+    if ($e.getFatigue() >= 7) {
+        score += 2;
+    }
+    if ($e.isLowRecovery()) {
+        score += 2;
+    }
+    if ($e.getOverload() >= 7) {
+        score += 2;
+    }
+
+    insert(new ExhaustionScore($sid, score));
+end
+
+rule "Create cynicism score"
+when
+    $t : ThresholdProfile($sid : studentId)
+    $e : DailyCheckInEvent(studentId == $sid)
+then
+    int score = 0;
+
+    if ($e.getMotivation() <= 3) {
+        score += 4;
+    }
+    if ($e.getStudyMeaning() > 0 && $e.getStudyMeaning() <= 3) {
+        score += 2;
+    }
+    if ($e.isMissedObligation()) {
+        score += 3;
+    }
+    if ($e.getCopingStrategy() == CopingStrategy.AVOIDANCE
+        || $e.getCopingStrategy() == CopingStrategy.PROCRASTINATION
+        || $e.getCopingStrategy() == CopingStrategy.DENIAL) {
+        score += 2;
+    }
+
+    insert(new CynicismScore($sid, score));
+end
+
+rule "Create efficacy score"
+when
+    $e : DailyCheckInEvent($sid : studentId)
+then
+    int score = $e.getEfficacy();
+
+    if ($e.getConcentration() <= 3) {
+        score -= 1;
+    }
+
+    if ($e.isMissedObligation()) {
+        score -= 1;
+    }
+
+    if (score < 1) {
+        score = 1;
+    }
+
+    insert(new EfficacyScore($sid, score));
+end

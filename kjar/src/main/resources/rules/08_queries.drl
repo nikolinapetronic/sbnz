@@ -1,0 +1,51 @@
+package rules
+
+import com.sbnz.model.indicators.ExhaustionIndicator;
+import com.sbnz.model.indicators.CynicismIndicator;
+import com.sbnz.model.indicators.ReducedEfficacyIndicator;
+
+import com.sbnz.model.patterns.SustainedStressPattern;
+import com.sbnz.model.patterns.SustainedPoorSleepPattern;
+import com.sbnz.model.patterns.LowRecoveryPattern;
+import com.sbnz.model.patterns.AvoidancePattern;
+import com.sbnz.model.patterns.AcademicGoalDeviationPattern;
+
+query hasAcademicBurnoutPattern(String $studentId)
+    coreBurnoutPattern($studentId;)
+    chronicityPattern($studentId;)
+    academicImpactPattern($studentId;)
+end
+
+query coreBurnoutPattern(String $studentId)
+    ExhaustionIndicator(studentId == $studentId)
+    CynicismIndicator(studentId == $studentId)
+    ReducedEfficacyIndicator(studentId == $studentId)
+end
+
+query chronicityPattern(String $studentId)
+    (
+        SustainedStressPattern(studentId == $studentId)
+        and
+        SustainedPoorSleepPattern(studentId == $studentId)
+    )
+    or
+    (
+        SustainedStressPattern(studentId == $studentId)
+        and
+        LowRecoveryPattern(studentId == $studentId)
+    )
+    or
+    (
+        SustainedPoorSleepPattern(studentId == $studentId)
+        and
+        LowRecoveryPattern(studentId == $studentId)
+    )
+end
+
+query academicImpactPattern(String $studentId)
+    (
+        AvoidancePattern(studentId == $studentId)
+        or
+        AcademicGoalDeviationPattern(studentId == $studentId)
+    )
+end
