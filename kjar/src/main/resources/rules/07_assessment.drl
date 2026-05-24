@@ -23,7 +23,7 @@ then
 
     assessment.addEvidence("SevereRiskPattern");
     assessment.addEvidence("Dominantne dimenzije: " + $d.getValue());
-    assessment.addEvidence("Aktivirani su indikatori i vremenski ili pogoršavajući obrasci visokog rizika.");
+    assessment.addEvidence("Aktivirani su indikatori i vremenski ili pogorsavajuci obrasci visokog rizika.");
 
     assessment.addRecommendation(RecommendationType.REST_AND_RECOVERY);
     assessment.addRecommendation(RecommendationType.STUDY_PLAN_RESTRUCTURING);
@@ -31,9 +31,9 @@ then
     assessment.addRecommendation(RecommendationType.SEEK_COUNSELING_SUPPORT);
 
     assessment.setExplanation(
-        "Rizik je označen kao SEVERE_RISK jer su detektovane dominantne dimenzije: "
+        "Rizik je oznacen kao SEVERE_RISK jer su detektovane dominantne dimenzije: "
         + $d.getValue()
-        + ", uz dodatne vremenske ili pogoršavajuće faktore kao što su loš san, visok stres, slab oporavak, negativan trend, niska podrška ili maladaptivne coping strategije."
+        + ", uz dodatne vremenske ili pogorsavajuce faktore kao sto su los san, visok stres, slab oporavak, negativan trend, niska podrska ili maladaptivne coping strategije."
     );
 
     insert(assessment);
@@ -52,16 +52,16 @@ then
 
     assessment.addEvidence("HighRiskWithSupportResourcesPattern");
     assessment.addEvidence("Dominantne dimenzije: " + $d.getValue());
-    assessment.addEvidence("Prisutan je visok rizik, ali i zaštitni faktori.");
+    assessment.addEvidence("Prisutan je visok rizik, ali i zastitni faktori.");
 
     assessment.addRecommendation(RecommendationType.REST_AND_RECOVERY);
     assessment.addRecommendation(RecommendationType.STUDY_PLAN_RESTRUCTURING);
     assessment.addRecommendation(RecommendationType.MONITOR_NEXT_7_DAYS);
 
     assessment.setExplanation(
-        "Rizik je označen kao HIGH_RISK na osnovu dominantnih dimenzija: "
+        "Rizik je oznacen kao HIGH_RISK na osnovu dominantnih dimenzija: "
         + $d.getValue()
-        + ". Prisustvo zaštitnih faktora ne poništava rizik, već se koristi za blaže i usmjerenije preporuke."
+        + ". Prisustvo zastitnih faktora ne ponistava rizik, vec se koristi za blaze i usmjerenije preporuke."
     );
 
     insert(assessment);
@@ -88,9 +88,9 @@ then
     assessment.addRecommendation(RecommendationType.SEEK_ACADEMIC_SUPPORT);
 
     assessment.setExplanation(
-        "Rizik je označen kao HIGH_RISK jer su detektovane izražene dominantne dimenzije: "
+        "Rizik je oznacen kao HIGH_RISK jer su detektovane izrazene dominantne dimenzije: "
         + $d.getValue()
-        + ", ili je umjeren rizik pojačan dodatnim obrascima kao što su niska motivacija, izbjegavanje obaveza ili negativan trend."
+        + ", ili je umjeren rizik pojacan dodatnim obrascima kao sto su niska motivacija, izbjegavanje obaveza ili negativan trend."
     );
 
     insert(assessment);
@@ -110,14 +110,14 @@ then
 
     assessment.addEvidence("ModerateRiskWithProtectiveFactorsPattern");
     assessment.addEvidence("Dominantne dimenzije: " + $d.getValue());
-    assessment.addEvidence("Aktivirani su indikatori srednjeg rizika uz zaštitne faktore.");
+    assessment.addEvidence("Aktivirani su indikatori srednjeg rizika uz zastitne faktore.");
 
     assessment.addRecommendation(RecommendationType.MONITOR_NEXT_7_DAYS);
 
     assessment.setExplanation(
         "Rizik je umjeren na osnovu dominantnih dimenzija: "
         + $d.getValue()
-        + ". Prisustvo zaštitnih faktora može pomoći u oporavku i praćenju stanja."
+        + ". Prisustvo zastitnih faktora moze pomoci u oporavku i pracenju stanja."
     );
 
     insert(assessment);
@@ -138,15 +138,15 @@ then
 
     assessment.addEvidence("ModerateRiskPattern");
     assessment.addEvidence("Dominantne dimenzije: " + $d.getValue());
-    assessment.addEvidence("Aktivirane su dvije relevantne dimenzije ili blaži obrazac rizika.");
+    assessment.addEvidence("Aktivirane su dvije relevantne dimenzije ili blazi obrazac rizika.");
 
     assessment.addRecommendation(RecommendationType.MONITOR_NEXT_7_DAYS);
     assessment.addRecommendation(RecommendationType.REST_AND_RECOVERY);
 
     assessment.setExplanation(
-        "Rizik je označen kao MODERATE_RISK jer su detektovane dominantne dimenzije: "
+        "Rizik je oznacen kao MODERATE_RISK jer su detektovane dominantne dimenzije: "
         + $d.getValue()
-        + ". To ukazuje na djelimično izražen obrazac akademskog burnout rizika."
+        + ". To ukazuje na djelimicno izrazen obrazac akademskog burnout rizika."
     );
 
     insert(assessment);
