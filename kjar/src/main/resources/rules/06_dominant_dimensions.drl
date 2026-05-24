@@ -5,8 +5,8 @@ import com.sbnz.model.indicators.CynicismIndicator;
 import com.sbnz.model.indicators.ReducedEfficacyIndicator;
 import com.sbnz.model.risks.DominantDimension;
 
-rule "Dominant dimension all three"
-salience 50
+rule "Create dominant dimension all three"
+salience 60
 when
     ExhaustionIndicator($sid : studentId)
     CynicismIndicator(studentId == $sid)
@@ -17,6 +17,20 @@ then
         $sid,
         "kombinovani obrazac: akademska iscrpljenost, cinizam/distanca i smanjena akademska efikasnost"
     ));
+end
+
+rule "Upgrade dominant dimension to all three"
+salience 59
+when
+    ExhaustionIndicator($sid : studentId)
+    CynicismIndicator(studentId == $sid)
+    ReducedEfficacyIndicator(studentId == $sid)
+    $d : DominantDimension(studentId == $sid,
+        value != "kombinovani obrazac: akademska iscrpljenost, cinizam/distanca i smanjena akademska efikasnost")
+then
+    modify($d) {
+        setValue("kombinovani obrazac: akademska iscrpljenost, cinizam/distanca i smanjena akademska efikasnost")
+    }
 end
 
 rule "Dominant dimension exhaustion and efficacy"
@@ -59,37 +73,4 @@ then
         $sid,
         "cinizam/distanca prema studijama i smanjena akademska efikasnost"
     ));
-end
-
-rule "Dominant dimension exhaustion only"
-salience 30
-when
-    ExhaustionIndicator($sid : studentId)
-    not CynicismIndicator(studentId == $sid)
-    not ReducedEfficacyIndicator(studentId == $sid)
-    not DominantDimension(studentId == $sid)
-then
-    insert(new DominantDimension($sid, "akademska iscrpljenost"));
-end
-
-rule "Dominant dimension cynicism only"
-salience 30
-when
-    CynicismIndicator($sid : studentId)
-    not ExhaustionIndicator(studentId == $sid)
-    not ReducedEfficacyIndicator(studentId == $sid)
-    not DominantDimension(studentId == $sid)
-then
-    insert(new DominantDimension($sid, "cinizam/distanca prema studijama"));
-end
-
-rule "Dominant dimension reduced efficacy only"
-salience 30
-when
-    ReducedEfficacyIndicator($sid : studentId)
-    not ExhaustionIndicator(studentId == $sid)
-    not CynicismIndicator(studentId == $sid)
-    not DominantDimension(studentId == $sid)
-then
-    insert(new DominantDimension($sid, "smanjena akademska efikasnost"));
 end

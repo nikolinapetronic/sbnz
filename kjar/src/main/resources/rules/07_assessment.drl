@@ -22,9 +22,6 @@ then
     assessment.setDominantDimensions($d.getValue());
 
     assessment.addEvidence("SevereRiskPattern");
-    assessment.addEvidence("Dominantne dimenzije: " + $d.getValue());
-    assessment.addEvidence("Aktivirani su indikatori i vremenski ili pogorsavajuci obrasci visokog rizika.");
-
     assessment.addRecommendation(RecommendationType.REST_AND_RECOVERY);
     assessment.addRecommendation(RecommendationType.STUDY_PLAN_RESTRUCTURING);
     assessment.addRecommendation(RecommendationType.SEEK_ACADEMIC_SUPPORT);
@@ -51,8 +48,6 @@ then
     assessment.setDominantDimensions($d.getValue());
 
     assessment.addEvidence("HighRiskWithSupportResourcesPattern");
-    assessment.addEvidence("Dominantne dimenzije: " + $d.getValue());
-    assessment.addEvidence("Prisutan je visok rizik, ali i zastitni faktori.");
 
     assessment.addRecommendation(RecommendationType.REST_AND_RECOVERY);
     assessment.addRecommendation(RecommendationType.STUDY_PLAN_RESTRUCTURING);
@@ -80,8 +75,6 @@ then
     assessment.setDominantDimensions($d.getValue());
 
     assessment.addEvidence("HighRiskPattern");
-    assessment.addEvidence("Dominantne dimenzije: " + $d.getValue());
-    assessment.addEvidence("Aktivirani su indikatori visokog rizika.");
 
     assessment.addRecommendation(RecommendationType.REST_AND_RECOVERY);
     assessment.addRecommendation(RecommendationType.STUDY_PLAN_RESTRUCTURING);
@@ -109,8 +102,6 @@ then
     assessment.setDominantDimensions($d.getValue());
 
     assessment.addEvidence("ModerateRiskWithProtectiveFactorsPattern");
-    assessment.addEvidence("Dominantne dimenzije: " + $d.getValue());
-    assessment.addEvidence("Aktivirani su indikatori srednjeg rizika uz zastitne faktore.");
 
     assessment.addRecommendation(RecommendationType.MONITOR_NEXT_7_DAYS);
 
@@ -137,8 +128,6 @@ then
     assessment.setDominantDimensions($d.getValue());
 
     assessment.addEvidence("ModerateRiskPattern");
-    assessment.addEvidence("Dominantne dimenzije: " + $d.getValue());
-    assessment.addEvidence("Aktivirane su dvije relevantne dimenzije ili blazi obrazac rizika.");
 
     assessment.addRecommendation(RecommendationType.MONITOR_NEXT_7_DAYS);
     assessment.addRecommendation(RecommendationType.REST_AND_RECOVERY);

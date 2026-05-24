@@ -1,0 +1,174 @@
+package rules
+
+import com.sbnz.model.risks.RiskAssessment;
+
+import com.sbnz.model.indicators.ExhaustionIndicator;
+import com.sbnz.model.indicators.CynicismIndicator;
+import com.sbnz.model.indicators.ReducedEfficacyIndicator;
+
+import com.sbnz.model.patterns.SustainedPoorSleepPattern;
+import com.sbnz.model.patterns.SustainedStressPattern;
+import com.sbnz.model.patterns.LowRecoveryPattern;
+import com.sbnz.model.patterns.AvoidancePattern;
+import com.sbnz.model.patterns.RepeatedLowMotivationPattern;
+import com.sbnz.model.patterns.AcademicGoalDeviationPattern;
+import com.sbnz.model.patterns.NegativeTrend;
+import com.sbnz.model.patterns.BurnoutDevelopmentPattern;
+
+import com.sbnz.model.factors.LowSupportRiskFactor;
+import com.sbnz.model.factors.MaladaptiveCopingFactor;
+import com.sbnz.model.factors.ProtectiveSupportFactor;
+
+rule "Add exhaustion indicator evidence"
+when
+    $a : RiskAssessment($sid : studentId)
+    ExhaustionIndicator(studentId == $sid)
+    eval(!$a.getActivatedEvidence().contains("ExhaustionIndicator"))
+then
+    modify($a) {
+        addEvidence("ExhaustionIndicator")
+    }
+end
+
+rule "Add cynicism indicator evidence"
+when
+    $a : RiskAssessment($sid : studentId)
+    CynicismIndicator(studentId == $sid)
+    eval(!$a.getActivatedEvidence().contains("CynicismIndicator"))
+then
+    modify($a) {
+        addEvidence("CynicismIndicator")
+    }
+end
+
+rule "Add reduced efficacy indicator evidence"
+when
+    $a : RiskAssessment($sid : studentId)
+    ReducedEfficacyIndicator(studentId == $sid)
+    eval(!$a.getActivatedEvidence().contains("ReducedEfficacyIndicator"))
+then
+    modify($a) {
+        addEvidence("ReducedEfficacyIndicator")
+    }
+end
+
+rule "Add sustained poor sleep evidence"
+when
+    $a : RiskAssessment($sid : studentId)
+    SustainedPoorSleepPattern(studentId == $sid)
+    eval(!$a.getActivatedEvidence().contains("SustainedPoorSleepPattern"))
+then
+    modify($a) {
+        addEvidence("SustainedPoorSleepPattern")
+    }
+end
+
+rule "Add sustained stress evidence"
+when
+    $a : RiskAssessment($sid : studentId)
+    SustainedStressPattern(studentId == $sid)
+    eval(!$a.getActivatedEvidence().contains("SustainedStressPattern"))
+then
+    modify($a) {
+        addEvidence("SustainedStressPattern")
+    }
+end
+
+rule "Add low recovery evidence"
+when
+    $a : RiskAssessment($sid : studentId)
+    LowRecoveryPattern(studentId == $sid)
+    eval(!$a.getActivatedEvidence().contains("LowRecoveryPattern"))
+then
+    modify($a) {
+        addEvidence("LowRecoveryPattern")
+    }
+end
+
+rule "Add avoidance evidence"
+when
+    $a : RiskAssessment($sid : studentId)
+    AvoidancePattern(studentId == $sid)
+    eval(!$a.getActivatedEvidence().contains("AvoidancePattern"))
+then
+    modify($a) {
+        addEvidence("AvoidancePattern")
+    }
+end
+
+rule "Add repeated low motivation evidence"
+when
+    $a : RiskAssessment($sid : studentId)
+    RepeatedLowMotivationPattern(studentId == $sid)
+    eval(!$a.getActivatedEvidence().contains("RepeatedLowMotivationPattern"))
+then
+    modify($a) {
+        addEvidence("RepeatedLowMotivationPattern")
+    }
+end
+
+rule "Add academic goal deviation evidence"
+when
+    $a : RiskAssessment($sid : studentId)
+    AcademicGoalDeviationPattern(studentId == $sid)
+    eval(!$a.getActivatedEvidence().contains("AcademicGoalDeviationPattern"))
+then
+    modify($a) {
+        addEvidence("AcademicGoalDeviationPattern")
+    }
+end
+
+rule "Add negative trend evidence"
+when
+    $a : RiskAssessment($sid : studentId)
+    NegativeTrend(studentId == $sid)
+    eval(!$a.getActivatedEvidence().contains("NegativeTrend"))
+then
+    modify($a) {
+        addEvidence("NegativeTrend")
+    }
+end
+
+rule "Add burnout development evidence"
+when
+    $a : RiskAssessment($sid : studentId)
+    BurnoutDevelopmentPattern(studentId == $sid)
+    eval(!$a.getActivatedEvidence().contains("BurnoutDevelopmentPattern"))
+then
+    modify($a) {
+        addEvidence("BurnoutDevelopmentPattern")
+    }
+end
+
+rule "Add low support factor evidence"
+when
+    $a : RiskAssessment($sid : studentId)
+    LowSupportRiskFactor(studentId == $sid)
+    eval(!$a.getActivatedEvidence().contains("LowSupportRiskFactor"))
+then
+    modify($a) {
+        addEvidence("LowSupportRiskFactor")
+    }
+end
+
+rule "Add maladaptive coping evidence"
+when
+    $a : RiskAssessment($sid : studentId)
+    MaladaptiveCopingFactor(studentId == $sid)
+    eval(!$a.getActivatedEvidence().contains("MaladaptiveCopingFactor"))
+then
+    modify($a) {
+        addEvidence("MaladaptiveCopingFactor")
+    }
+end
+
+rule "Add protective support evidence"
+when
+    $a : RiskAssessment($sid : studentId)
+    ProtectiveSupportFactor(studentId == $sid)
+    eval(!$a.getActivatedEvidence().contains("ProtectiveSupportFactor"))
+then
+    modify($a) {
+        addEvidence("ProtectiveSupportFactor")
+    }
+end
