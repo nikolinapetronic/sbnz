@@ -10,6 +10,7 @@ import com.sbnz.service.dto.AssessmentRequest;
 
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.rule.QueryResults;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -70,7 +71,8 @@ public class AssessmentService {
             assessment.setExplanation("Nije detektovan dovoljan broj indikatora i vremenskih obrazaca za povisen rizik.");
         }
 
-        assessment.setHasAcademicBurnoutPattern(false);
+        boolean hasAcademicBurnoutPattern = hasAcademicBurnoutPattern(ksession, studentId);
+        assessment.setHasAcademicBurnoutPattern(hasAcademicBurnoutPattern);
 
         ksession.dispose();
 
@@ -120,5 +122,9 @@ public class AssessmentService {
         return new ThresholdProfile(studentId, profileType, academicPeriod, 6, 7, 4, 2, 5, 5);
     }
 
+    private boolean hasAcademicBurnoutPattern(KieSession ksession, String studentId) {
+        QueryResults results = ksession.getQueryResults("hasAcademicBurnoutPattern", studentId);
+        return results.size() > 0;
+    }
 
 }
