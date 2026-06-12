@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AssessmentService } from './assessment.service';
 import { RiskAssessment, scenarios } from './scenarios';
@@ -21,7 +21,10 @@ export class App {
   errorMessage = '';
   loading = false;
 
-  constructor(private readonly assessmentService: AssessmentService) {}
+  constructor(
+    private readonly assessmentService: AssessmentService,
+    private readonly changeDetectorRef: ChangeDetectorRef
+  ) {}
 
   onScenarioChange(): void {
     this.requestBody = this.formatJson(scenarios[this.selectedScenario].body);
@@ -41,13 +44,15 @@ export class App {
     } catch {
       this.loading = false;
       this.errorMessage = 'Request body is not valid JSON.';
+      this.changeDetectorRef.detectChanges();
       return;
-    }
+}
 
     this.assessmentService.assess(parsedBody).subscribe({
       next: (result) => {
         this.assessment = result;
         this.loading = false;
+        this.changeDetectorRef.detectChanges();
       },
       error: (error) => {
         this.errorMessage =
@@ -56,6 +61,7 @@ export class App {
           error?.message ||
           'Assessment request failed.';
         this.loading = false;
+        this.changeDetectorRef.detectChanges();
       }
     });
   }
