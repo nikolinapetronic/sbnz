@@ -1,0 +1,375 @@
+package rules;
+import com.sbnz.model.context.StudentContext;
+import com.sbnz.model.profile.ThresholdProfile;
+import com.sbnz.model.enums.StudentProfile;
+import com.sbnz.model.enums.AcademicPeriod;
+
+rule "Create threshold profile DEFAULT REGULAR_CLASSES"
+salience 200
+when
+    StudentContext(
+        $sid : studentId,
+        profileType == StudentProfile.DEFAULT,
+        academicPeriod == AcademicPeriod.REGULAR_CLASSES
+    )
+    not ThresholdProfile(studentId == $sid)
+then
+    insert(new ThresholdProfile(
+        $sid,
+        StudentProfile.DEFAULT,
+        AcademicPeriod.REGULAR_CLASSES,
+        6,
+        7,
+        4,
+        2,
+        5,
+        5
+    ));
+end
+
+rule "Create threshold profile DEFAULT MIDTERM_WEEK"
+salience 200
+when
+    StudentContext(
+        $sid : studentId,
+        profileType == StudentProfile.DEFAULT,
+        academicPeriod == AcademicPeriod.MIDTERM_WEEK
+    )
+    not ThresholdProfile(studentId == $sid)
+then
+    insert(new ThresholdProfile(
+        $sid,
+        StudentProfile.DEFAULT,
+        AcademicPeriod.MIDTERM_WEEK,
+        6,
+        7,
+        4,
+        2,
+        5,
+        5
+    ));
+end
+
+rule "Create threshold profile DEFAULT EXAM_PERIOD"
+salience 200
+when
+    StudentContext(
+        $sid : studentId,
+        profileType == StudentProfile.DEFAULT,
+        academicPeriod == AcademicPeriod.EXAM_PERIOD
+    )
+    not ThresholdProfile(studentId == $sid)
+then
+    insert(new ThresholdProfile(
+        $sid,
+        StudentProfile.DEFAULT,
+        AcademicPeriod.EXAM_PERIOD,
+        6,
+        7,
+        5,
+        2,
+        6,
+        5
+    ));
+end
+
+rule "Create threshold profile DEFAULT AFTER_EXAM_PERIOD"
+salience 200
+when
+    StudentContext(
+        $sid : studentId,
+        profileType == StudentProfile.DEFAULT,
+        academicPeriod == AcademicPeriod.AFTER_EXAM_PERIOD
+    )
+    not ThresholdProfile(studentId == $sid)
+then
+    insert(new ThresholdProfile(
+        $sid,
+        StudentProfile.DEFAULT,
+        AcademicPeriod.AFTER_EXAM_PERIOD,
+        6,
+        7,
+        4,
+        2,
+        5,
+        5
+    ));
+end
+
+rule "Create threshold profile FRESHMAN REGULAR_CLASSES"
+salience 200
+when
+    StudentContext(
+        $sid : studentId,
+        profileType == StudentProfile.FRESHMAN,
+        academicPeriod == AcademicPeriod.REGULAR_CLASSES
+    )
+    not ThresholdProfile(studentId == $sid)
+then
+    insert(new ThresholdProfile(
+        $sid,
+        StudentProfile.FRESHMAN,
+        AcademicPeriod.REGULAR_CLASSES,
+        6,
+        7,
+        4,
+        2,
+        6,
+        5
+    ));
+end
+
+rule "Create threshold profile FRESHMAN MIDTERM_WEEK"
+salience 200
+when
+    StudentContext(
+        $sid : studentId,
+        profileType == StudentProfile.FRESHMAN,
+        academicPeriod == AcademicPeriod.MIDTERM_WEEK
+    )
+    not ThresholdProfile(studentId == $sid)
+then
+    insert(new ThresholdProfile(
+        $sid,
+        StudentProfile.FRESHMAN,
+        AcademicPeriod.MIDTERM_WEEK,
+        6,
+        7,
+        4,
+        2,
+        6,
+        5
+    ));
+end
+
+rule "Create threshold profile FRESHMAN EXAM_PERIOD"
+salience 200
+when
+    StudentContext(
+        $sid : studentId,
+        profileType == StudentProfile.FRESHMAN,
+        academicPeriod == AcademicPeriod.EXAM_PERIOD
+    )
+    not ThresholdProfile(studentId == $sid)
+then
+    insert(new ThresholdProfile(
+        $sid,
+        StudentProfile.FRESHMAN,
+        AcademicPeriod.EXAM_PERIOD,
+        6,
+        7,
+        5,
+        2,
+        6,
+        5
+    ));
+end
+
+rule "Create threshold profile FRESHMAN AFTER_EXAM_PERIOD"
+salience 200
+when
+    StudentContext(
+        $sid : studentId,
+        profileType == StudentProfile.FRESHMAN,
+        academicPeriod == AcademicPeriod.AFTER_EXAM_PERIOD
+    )
+    not ThresholdProfile(studentId == $sid)
+then
+    insert(new ThresholdProfile(
+        $sid,
+        StudentProfile.FRESHMAN,
+        AcademicPeriod.AFTER_EXAM_PERIOD,
+        6,
+        7,
+        4,
+        2,
+        6,
+        5
+    ));
+end
+
+rule "Create threshold profile WORKING_STUDENT REGULAR_CLASSES"
+salience 200
+when
+    StudentContext(
+        $sid : studentId,
+        profileType == StudentProfile.WORKING_STUDENT,
+        academicPeriod == AcademicPeriod.REGULAR_CLASSES
+    )
+    not ThresholdProfile(studentId == $sid)
+then
+    insert(new ThresholdProfile(
+        $sid,
+        StudentProfile.WORKING_STUDENT,
+        AcademicPeriod.REGULAR_CLASSES,
+        5,
+        8,
+        4,
+        3,
+        7,
+        4
+    ));
+end
+
+rule "Create threshold profile WORKING_STUDENT MIDTERM_WEEK"
+salience 200
+when
+    StudentContext(
+        $sid : studentId,
+        profileType == StudentProfile.WORKING_STUDENT,
+        academicPeriod == AcademicPeriod.MIDTERM_WEEK
+    )
+    not ThresholdProfile(studentId == $sid)
+then
+    insert(new ThresholdProfile(
+        $sid,
+        StudentProfile.WORKING_STUDENT,
+        AcademicPeriod.MIDTERM_WEEK,
+        5,
+        8,
+        4,
+        3,
+        7,
+        4
+    ));
+end
+
+rule "Create threshold profile WORKING_STUDENT EXAM_PERIOD"
+salience 200
+when
+    StudentContext(
+        $sid : studentId,
+        profileType == StudentProfile.WORKING_STUDENT,
+        academicPeriod == AcademicPeriod.EXAM_PERIOD
+    )
+    not ThresholdProfile(studentId == $sid)
+then
+    insert(new ThresholdProfile(
+        $sid,
+        StudentProfile.WORKING_STUDENT,
+        AcademicPeriod.EXAM_PERIOD,
+        5,
+        8,
+        5,
+        3,
+        7,
+        4
+    ));
+end
+
+rule "Create threshold profile WORKING_STUDENT AFTER_EXAM_PERIOD"
+salience 200
+when
+    StudentContext(
+        $sid : studentId,
+        profileType == StudentProfile.WORKING_STUDENT,
+        academicPeriod == AcademicPeriod.AFTER_EXAM_PERIOD
+    )
+    not ThresholdProfile(studentId == $sid)
+then
+    insert(new ThresholdProfile(
+        $sid,
+        StudentProfile.WORKING_STUDENT,
+        AcademicPeriod.AFTER_EXAM_PERIOD,
+        5,
+        8,
+        4,
+        3,
+        7,
+        4
+    ));
+end
+
+rule "Create threshold profile FINAL_YEAR REGULAR_CLASSES"
+salience 200
+when
+    StudentContext(
+        $sid : studentId,
+        profileType == StudentProfile.FINAL_YEAR,
+        academicPeriod == AcademicPeriod.REGULAR_CLASSES
+    )
+    not ThresholdProfile(studentId == $sid)
+then
+    insert(new ThresholdProfile(
+        $sid,
+        StudentProfile.FINAL_YEAR,
+        AcademicPeriod.REGULAR_CLASSES,
+        6,
+        7,
+        4,
+        2,
+        5,
+        4
+    ));
+end
+
+rule "Create threshold profile FINAL_YEAR MIDTERM_WEEK"
+salience 200
+when
+    StudentContext(
+        $sid : studentId,
+        profileType == StudentProfile.FINAL_YEAR,
+        academicPeriod == AcademicPeriod.MIDTERM_WEEK
+    )
+    not ThresholdProfile(studentId == $sid)
+then
+    insert(new ThresholdProfile(
+        $sid,
+        StudentProfile.FINAL_YEAR,
+        AcademicPeriod.MIDTERM_WEEK,
+        6,
+        7,
+        4,
+        2,
+        5,
+        4
+    ));
+end
+
+rule "Create threshold profile FINAL_YEAR EXAM_PERIOD"
+salience 200
+when
+    StudentContext(
+        $sid : studentId,
+        profileType == StudentProfile.FINAL_YEAR,
+        academicPeriod == AcademicPeriod.EXAM_PERIOD
+    )
+    not ThresholdProfile(studentId == $sid)
+then
+    insert(new ThresholdProfile(
+        $sid,
+        StudentProfile.FINAL_YEAR,
+        AcademicPeriod.EXAM_PERIOD,
+        6,
+        7,
+        5,
+        2,
+        5,
+        4
+    ));
+end
+
+rule "Create threshold profile FINAL_YEAR AFTER_EXAM_PERIOD"
+salience 200
+when
+    StudentContext(
+        $sid : studentId,
+        profileType == StudentProfile.FINAL_YEAR,
+        academicPeriod == AcademicPeriod.AFTER_EXAM_PERIOD
+    )
+    not ThresholdProfile(studentId == $sid)
+then
+    insert(new ThresholdProfile(
+        $sid,
+        StudentProfile.FINAL_YEAR,
+        AcademicPeriod.AFTER_EXAM_PERIOD,
+        6,
+        7,
+        4,
+        2,
+        5,
+        4
+    ));
+end
+
+

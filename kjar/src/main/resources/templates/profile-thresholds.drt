@@ -1,0 +1,43 @@
+template header
+profileType
+academicPeriod
+minSleepHours
+highStressThreshold
+lowEfficacyThreshold
+maxMissedObligations
+exhaustionIndicatorThreshold
+cynicismIndicatorThreshold
+
+package rules;
+
+import com.sbnz.model.context.StudentContext;
+import com.sbnz.model.profile.ThresholdProfile;
+import com.sbnz.model.enums.StudentProfile;
+import com.sbnz.model.enums.AcademicPeriod;
+
+template "profile threshold template"
+
+rule "Create threshold profile @{profileType} @{academicPeriod}"
+salience 200
+when
+    StudentContext(
+        $sid : studentId,
+        profileType == StudentProfile.@{profileType},
+        academicPeriod == AcademicPeriod.@{academicPeriod}
+    )
+    not ThresholdProfile(studentId == $sid)
+then
+    insert(new ThresholdProfile(
+        $sid,
+        StudentProfile.@{profileType},
+        AcademicPeriod.@{academicPeriod},
+        @{minSleepHours},
+        @{highStressThreshold},
+        @{lowEfficacyThreshold},
+        @{maxMissedObligations},
+        @{exhaustionIndicatorThreshold},
+        @{cynicismIndicatorThreshold}
+    ));
+end
+
+end template

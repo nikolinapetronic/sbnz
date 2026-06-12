@@ -6,6 +6,7 @@ import com.sbnz.model.enums.StudentProfile;
 import com.sbnz.model.events.DailyCheckInEvent;
 import com.sbnz.model.profile.ThresholdProfile;
 import com.sbnz.model.risks.RiskAssessment;
+import com.sbnz.model.context.StudentContext;
 import com.sbnz.service.dto.AssessmentRequest;
 
 import org.kie.api.runtime.KieContainer;
@@ -31,13 +32,13 @@ public class AssessmentService {
 
         String studentId = request.getStudentId();
 
-        ThresholdProfile thresholds = createThresholdProfile(
-                studentId,
-                request.getProfileType(),
-                request.getAcademicPeriod()
+        StudentContext studentContext = new StudentContext(
+            studentId,
+            request.getProfileType(),
+            request.getAcademicPeriod()
         );
 
-        ksession.insert(thresholds);
+        ksession.insert(studentContext);
 
         List<DailyCheckInEvent> events = request.getDailyCheckIns();
         events.sort(Comparator.comparing(DailyCheckInEvent::getDayIndex));
@@ -98,28 +99,6 @@ public class AssessmentService {
 
     private boolean isHigherRisk(RiskAssessment candidate, RiskAssessment current) {
         return candidate.getRiskLevel().ordinal() > current.getRiskLevel().ordinal();
-    }
-
-    private ThresholdProfile createThresholdProfile(String studentId,
-                                                    StudentProfile profileType,
-                                                    AcademicPeriod academicPeriod) {
-        if (academicPeriod == AcademicPeriod.EXAM_PERIOD) {
-            return new ThresholdProfile(studentId, profileType, academicPeriod, 6, 7, 5, 2, 6, 5);
-        }
-
-        if (profileType == StudentProfile.WORKING_STUDENT) {
-            return new ThresholdProfile(studentId, profileType, academicPeriod, 5, 8, 4, 3, 7, 4);
-        }
-
-        if (profileType == StudentProfile.FINAL_YEAR) {
-            return new ThresholdProfile(studentId, profileType, academicPeriod, 6, 7, 4, 2, 5, 4);
-        }
-
-        if (profileType == StudentProfile.FRESHMAN) {
-            return new ThresholdProfile(studentId, profileType, academicPeriod, 6, 7, 4, 2, 6, 5);
-        }
-
-        return new ThresholdProfile(studentId, profileType, academicPeriod, 6, 7, 4, 2, 5, 5);
     }
 
     private boolean hasAcademicBurnoutPattern(KieSession ksession, String studentId) {
