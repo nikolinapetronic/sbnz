@@ -1,5 +1,8 @@
 package rules
 
+import com.sbnz.model.evidence.EvidenceNode;
+import com.sbnz.model.evidence.EvidenceRelation;
+
 import com.sbnz.model.indicators.ExhaustionIndicator;
 import com.sbnz.model.indicators.CynicismIndicator;
 import com.sbnz.model.indicators.ReducedEfficacyIndicator;
@@ -9,43 +12,315 @@ import com.sbnz.model.patterns.SustainedPoorSleepPattern;
 import com.sbnz.model.patterns.LowRecoveryPattern;
 import com.sbnz.model.patterns.AvoidancePattern;
 import com.sbnz.model.patterns.AcademicGoalDeviationPattern;
+import com.sbnz.model.patterns.RepeatedLowMotivationPattern;
+import com.sbnz.model.patterns.NegativeTrend;
+
+
+// EVIDENCE RELATION HIJERARHIJA
+// ove cinjenice definisu graf znanja koji je koriscen od strane rekurzivnog backward chaining-a
+
+rule "Evidence relation - exhaustion indicator to core evidence"
+salience 20
+when
+    not EvidenceRelation(child == "ExhaustionIndicator", parent == "CoreBurnoutEvidence")
+then
+    insert(new EvidenceRelation("ExhaustionIndicator", "CoreBurnoutEvidence"));
+end
+
+rule "Evidence relation - cynicism indicator to core evidence"
+salience 20
+when
+    not EvidenceRelation(child == "CynicismIndicator", parent == "CoreBurnoutEvidence")
+then
+    insert(new EvidenceRelation("CynicismIndicator", "CoreBurnoutEvidence"));
+end
+
+rule "Evidence relation - reduced efficacy indicator to core evidence"
+salience 20
+when
+    not EvidenceRelation(child == "ReducedEfficacyIndicator", parent == "CoreBurnoutEvidence")
+then
+    insert(new EvidenceRelation("ReducedEfficacyIndicator", "CoreBurnoutEvidence"));
+end
+
+rule "Evidence relation - sustained poor sleep to chronicity evidence"
+salience 20
+when
+    not EvidenceRelation(child == "SustainedPoorSleepPattern", parent == "ChronicityEvidence")
+then
+    insert(new EvidenceRelation("SustainedPoorSleepPattern", "ChronicityEvidence"));
+end
+
+rule "Evidence relation - sustained stress to chronicity evidence"
+salience 20
+when
+    not EvidenceRelation(child == "SustainedStressPattern", parent == "ChronicityEvidence")
+then
+    insert(new EvidenceRelation("SustainedStressPattern", "ChronicityEvidence"));
+end
+
+rule "Evidence relation - low recovery to chronicity evidence"
+salience 20
+when
+    not EvidenceRelation(child == "LowRecoveryPattern", parent == "ChronicityEvidence")
+then
+    insert(new EvidenceRelation("LowRecoveryPattern", "ChronicityEvidence"));
+end
+
+rule "Evidence relation - repeated low motivation to chronicity evidence"
+salience 20
+when
+    not EvidenceRelation(child == "RepeatedLowMotivationPattern", parent == "ChronicityEvidence")
+then
+    insert(new EvidenceRelation("RepeatedLowMotivationPattern", "ChronicityEvidence"));
+end
+
+rule "Evidence relation - avoidance to academic impact evidence"
+salience 20
+when
+    not EvidenceRelation(child == "AvoidancePattern", parent == "AcademicImpactEvidence")
+then
+    insert(new EvidenceRelation("AvoidancePattern", "AcademicImpactEvidence"));
+end
+
+rule "Evidence relation - academic goal deviation to academic impact evidence"
+salience 20
+when
+    not EvidenceRelation(child == "AcademicGoalDeviationPattern", parent == "AcademicImpactEvidence")
+then
+    insert(new EvidenceRelation("AcademicGoalDeviationPattern", "AcademicImpactEvidence"));
+end
+
+rule "Evidence relation - negative trend to academic impact evidence"
+salience 20
+when
+    not EvidenceRelation(child == "NegativeTrend", parent == "AcademicImpactEvidence")
+then
+    insert(new EvidenceRelation("NegativeTrend", "AcademicImpactEvidence"));
+end
+
+rule "Evidence relation - core evidence to burnout evidence"
+salience 20
+when
+    not EvidenceRelation(child == "CoreBurnoutEvidence", parent == "BurnoutEvidence")
+then
+    insert(new EvidenceRelation("CoreBurnoutEvidence", "BurnoutEvidence"));
+end
+
+rule "Evidence relation - chronicity evidence to burnout evidence"
+salience 20
+when
+    not EvidenceRelation(child == "ChronicityEvidence", parent == "BurnoutEvidence")
+then
+    insert(new EvidenceRelation("ChronicityEvidence", "BurnoutEvidence"));
+end
+
+rule "Evidence relation - academic impact evidence to burnout evidence"
+salience 20
+when
+    not EvidenceRelation(child == "AcademicImpactEvidence", parent == "BurnoutEvidence")
+then
+    insert(new EvidenceRelation("AcademicImpactEvidence", "BurnoutEvidence"));
+end
+
+rule "Evidence relation - burnout evidence to academic burnout pattern"
+salience 20
+when
+    not EvidenceRelation(child == "BurnoutEvidence", parent == "AcademicBurnoutPattern")
+then
+    insert(new EvidenceRelation("BurnoutEvidence", "AcademicBurnoutPattern"));
+end
+
+
+// EVIDENCE NODES IZ FORWARD CHAINING CINJENICA
+// ova pravila transformisu konkretne cinjenice u genericke evidence nodes koji su korisceni u backward chaining-u
+
+rule "Evidence node - exhaustion indicator"
+salience 15
+when
+    ExhaustionIndicator($sid : studentId)
+    not EvidenceNode(studentId == $sid, name == "ExhaustionIndicator")
+then
+    insert(new EvidenceNode($sid, "ExhaustionIndicator"));
+end
+
+rule "Evidence node - cynicism indicator"
+salience 15
+when
+    CynicismIndicator($sid : studentId)
+    not EvidenceNode(studentId == $sid, name == "CynicismIndicator")
+then
+    insert(new EvidenceNode($sid, "CynicismIndicator"));
+end
+
+rule "Evidence node - reduced efficacy indicator"
+salience 15
+when
+    ReducedEfficacyIndicator($sid : studentId)
+    not EvidenceNode(studentId == $sid, name == "ReducedEfficacyIndicator")
+then
+    insert(new EvidenceNode($sid, "ReducedEfficacyIndicator"));
+end
+
+rule "Evidence node - sustained poor sleep pattern"
+salience 15
+when
+    SustainedPoorSleepPattern($sid : studentId)
+    not EvidenceNode(studentId == $sid, name == "SustainedPoorSleepPattern")
+then
+    insert(new EvidenceNode($sid, "SustainedPoorSleepPattern"));
+end
+
+rule "Evidence node - sustained stress pattern"
+salience 15
+when
+    SustainedStressPattern($sid : studentId)
+    not EvidenceNode(studentId == $sid, name == "SustainedStressPattern")
+then
+    insert(new EvidenceNode($sid, "SustainedStressPattern"));
+end
+
+rule "Evidence node - low recovery pattern"
+salience 15
+when
+    LowRecoveryPattern($sid : studentId)
+    not EvidenceNode(studentId == $sid, name == "LowRecoveryPattern")
+then
+    insert(new EvidenceNode($sid, "LowRecoveryPattern"));
+end
+
+rule "Evidence node - repeated low motivation pattern"
+salience 15
+when
+    RepeatedLowMotivationPattern($sid : studentId)
+    not EvidenceNode(studentId == $sid, name == "RepeatedLowMotivationPattern")
+then
+    insert(new EvidenceNode($sid, "RepeatedLowMotivationPattern"));
+end
+
+rule "Evidence node - avoidance pattern"
+salience 15
+when
+    AvoidancePattern($sid : studentId)
+    not EvidenceNode(studentId == $sid, name == "AvoidancePattern")
+then
+    insert(new EvidenceNode($sid, "AvoidancePattern"));
+end
+
+rule "Evidence node - academic goal deviation pattern"
+salience 15
+when
+    AcademicGoalDeviationPattern($sid : studentId)
+    not EvidenceNode(studentId == $sid, name == "AcademicGoalDeviationPattern")
+then
+    insert(new EvidenceNode($sid, "AcademicGoalDeviationPattern"));
+end
+
+rule "Evidence node - negative trend"
+salience 15
+when
+    NegativeTrend($sid : studentId)
+    not EvidenceNode(studentId == $sid, name == "NegativeTrend")
+then
+    insert(new EvidenceNode($sid, "NegativeTrend"));
+end
+
+
+// GROUPNI EVIDENCE NODES
+// ova pravila kreiraju higher-level evidence samo kad trazeni lower-level evidence postoji
+
+rule "Evidence node - core burnout evidence"
+salience 10
+when
+    EvidenceNode($sid : studentId, name == "ExhaustionIndicator")
+    EvidenceNode(studentId == $sid, name == "CynicismIndicator")
+    EvidenceNode(studentId == $sid, name == "ReducedEfficacyIndicator")
+    not EvidenceNode(studentId == $sid, name == "CoreBurnoutEvidence")
+then
+    insert(new EvidenceNode($sid, "CoreBurnoutEvidence"));
+end
+
+rule "Evidence node - chronicity evidence from poor sleep and stress"
+salience 10
+when
+    EvidenceNode($sid : studentId, name == "SustainedPoorSleepPattern")
+    EvidenceNode(studentId == $sid, name == "SustainedStressPattern")
+    not EvidenceNode(studentId == $sid, name == "ChronicityEvidence")
+then
+    insert(new EvidenceNode($sid, "ChronicityEvidence"));
+end
+
+rule "Evidence node - chronicity evidence from poor sleep and low recovery"
+salience 10
+when
+    EvidenceNode($sid : studentId, name == "SustainedPoorSleepPattern")
+    EvidenceNode(studentId == $sid, name == "LowRecoveryPattern")
+    not EvidenceNode(studentId == $sid, name == "ChronicityEvidence")
+then
+    insert(new EvidenceNode($sid, "ChronicityEvidence"));
+end
+
+rule "Evidence node - chronicity evidence from stress and low recovery"
+salience 10
+when
+    EvidenceNode($sid : studentId, name == "SustainedStressPattern")
+    EvidenceNode(studentId == $sid, name == "LowRecoveryPattern")
+    not EvidenceNode(studentId == $sid, name == "ChronicityEvidence")
+then
+    insert(new EvidenceNode($sid, "ChronicityEvidence"));
+end
+
+rule "Evidence node - academic impact evidence from avoidance"
+salience 10
+when
+    EvidenceNode($sid : studentId, name == "AvoidancePattern")
+    not EvidenceNode(studentId == $sid, name == "AcademicImpactEvidence")
+then
+    insert(new EvidenceNode($sid, "AcademicImpactEvidence"));
+end
+
+rule "Evidence node - academic impact evidence from academic goal deviation"
+salience 10
+when
+    EvidenceNode($sid : studentId, name == "AcademicGoalDeviationPattern")
+    not EvidenceNode(studentId == $sid, name == "AcademicImpactEvidence")
+then
+    insert(new EvidenceNode($sid, "AcademicImpactEvidence"));
+end
+
+rule "Evidence node - academic impact evidence from negative trend"
+salience 10
+when
+    EvidenceNode($sid : studentId, name == "NegativeTrend")
+    not EvidenceNode(studentId == $sid, name == "AcademicImpactEvidence")
+then
+    insert(new EvidenceNode($sid, "AcademicImpactEvidence"));
+end
+
+
+// RECURSIVE BACKWARD CHAINING QUERIES
+
+query reachesEvidence(String $child, String $target)
+    EvidenceRelation(child == $child, parent == $target)
+    or
+    (
+        EvidenceRelation(child == $child, $middle : parent)
+        and
+        reachesEvidence($middle, $target;)
+    )
+end
+
+query supportsEvidence(String $studentId, String $child, String $target)
+    EvidenceNode(studentId == $studentId, name == $child)
+    reachesEvidence($child, $target;)
+end
 
 query hasAcademicBurnoutPattern(String $studentId)
-    coreBurnoutPattern($studentId;)
-    chronicityPattern($studentId;)
-    academicImpactPattern($studentId;)
-end
+    EvidenceNode(studentId == $studentId, name == "CoreBurnoutEvidence")
+    EvidenceNode(studentId == $studentId, name == "ChronicityEvidence")
+    EvidenceNode(studentId == $studentId, name == "AcademicImpactEvidence")
 
-query coreBurnoutPattern(String $studentId)
-    ExhaustionIndicator(studentId == $studentId)
-    CynicismIndicator(studentId == $studentId)
-    ReducedEfficacyIndicator(studentId == $studentId)
-end
-
-query chronicityPattern(String $studentId)
-    (
-        SustainedStressPattern(studentId == $studentId)
-        and
-        SustainedPoorSleepPattern(studentId == $studentId)
-    )
-    or
-    (
-        SustainedStressPattern(studentId == $studentId)
-        and
-        LowRecoveryPattern(studentId == $studentId)
-    )
-    or
-    (
-        SustainedPoorSleepPattern(studentId == $studentId)
-        and
-        LowRecoveryPattern(studentId == $studentId)
-    )
-end
-
-query academicImpactPattern(String $studentId)
-    (
-        AvoidancePattern(studentId == $studentId)
-        or
-        AcademicGoalDeviationPattern(studentId == $studentId)
-    )
+    supportsEvidence($studentId, "CoreBurnoutEvidence", "AcademicBurnoutPattern";)
+    supportsEvidence($studentId, "ChronicityEvidence", "AcademicBurnoutPattern";)
+    supportsEvidence($studentId, "AcademicImpactEvidence", "AcademicBurnoutPattern";)
 end
