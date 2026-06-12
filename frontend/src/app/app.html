@@ -1,0 +1,130 @@
+<div class="page">
+  <header class="hero">
+    <div>
+      <p class="eyebrow">StudyGuard</p>
+      <h1>Academic Burnout Risk Assessment</h1>
+      <p class="hero-text">
+        Demo client for testing rule-based assessment, CEP patterns,
+        template thresholds and recursive backward chaining.
+      </p>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="card">
+      <div class="section-header">
+        <h2>Assessment request</h2>
+        <p>Select a prepared scenario or edit the JSON manually.</p>
+      </div>
+
+      <label class="label" for="scenario">Demo scenario</label>
+      <select
+        id="scenario"
+        class="select"
+        [(ngModel)]="selectedScenario"
+        (change)="onScenarioChange()"
+      >
+        <option *ngFor="let key of scenarioKeys" [value]="key">
+          {{ scenarios[key].label }}
+        </option>
+      </select>
+
+      <p class="scenario-description">
+        {{ scenarios[selectedScenario].description }}
+      </p>
+
+      <label class="label" for="requestBody">Request body</label>
+      <textarea
+        id="requestBody"
+        class="json-editor"
+        [(ngModel)]="requestBody"
+        spellcheck="false"
+      ></textarea>
+
+      <button class="primary-button" type="button" (click)="runAssessment()" [disabled]="loading">
+        {{ loading ? 'Running assessment...' : 'Run assessment' }}
+      </button>
+
+      <div class="error-box" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-header">
+        <h2>Assessment result</h2>
+        <p>Final fact returned by the expert system.</p>
+      </div>
+
+      <div class="empty-state" *ngIf="!assessment && !errorMessage">
+        Run a scenario to see the assessment result.
+      </div>
+
+      <div class="result" *ngIf="assessment">
+        <div class="risk-badge" [ngClass]="getRiskClass(assessment.riskLevel)">
+          {{ assessment.riskLevel }}
+        </div>
+
+        <div class="result-grid">
+          <div>
+            <span class="field-label">Student</span>
+            <strong>{{ assessment.studentId }}</strong>
+          </div>
+
+          <div>
+            <span class="field-label">Academic burnout pattern</span>
+            <strong>
+              {{ assessment.hasAcademicBurnoutPattern ? 'Detected' : 'Not detected' }}
+            </strong>
+          </div>
+        </div>
+
+        <div class="result-block">
+          <span class="field-label">Dominant dimensions</span>
+          <p>{{ assessment.dominantDimensions }}</p>
+        </div>
+
+        <div class="result-block">
+          <span class="field-label">Explanation</span>
+          <p>{{ assessment.explanation }}</p>
+        </div>
+
+        <div class="result-block">
+          <span class="field-label">Activated evidence</span>
+
+          <ul class="tag-list" *ngIf="assessment.activatedEvidence.length; else noEvidence">
+            <li *ngFor="let item of assessment.activatedEvidence">
+              {{ item }}
+            </li>
+          </ul>
+
+          <ng-template #noEvidence>
+            <p>No activated evidence.</p>
+          </ng-template>
+        </div>
+
+        <div class="result-block">
+          <span class="field-label">Recommendations</span>
+
+          <ul
+            class="tag-list recommendations"
+            *ngIf="assessment.recommendations.length; else noRecommendations"
+          >
+            <li *ngFor="let item of assessment.recommendations">
+              {{ item }}
+            </li>
+          </ul>
+
+          <ng-template #noRecommendations>
+            <p>No recommendations.</p>
+          </ng-template>
+        </div>
+
+        <details class="raw-json">
+          <summary>Raw JSON response</summary>
+          <pre>{{ assessment | json }}</pre>
+        </details>
+      </div>
+    </section>
+  </main>
+</div>
