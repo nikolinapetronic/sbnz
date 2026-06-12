@@ -12,6 +12,8 @@ import com.sbnz.model.patterns.RepeatedLowMotivationPattern;
 import com.sbnz.model.patterns.AcademicGoalDeviationPattern;
 import com.sbnz.model.patterns.NegativeTrend;
 
+// CEP PATTERNS PREKO DAILY CHECK-IN EVENTS
+
 rule "Sustained poor sleep pattern"
 when
     $t : ThresholdProfile($sid : studentId)
@@ -28,6 +30,13 @@ end
 rule "Sustained stress pattern"
 when
     $t : ThresholdProfile($sid : studentId)
+
+    Number(intValue >= 3) from accumulate(
+        DailyCheckInEvent(studentId == $sid, $stressCount : stress)
+            over window:time(7d),
+        count($stressCount)
+    )
+
     Number(doubleValue >= $t.highStressThreshold) from accumulate(
         DailyCheckInEvent(studentId == $sid, $stress : stress)
             over window:time(7d),
@@ -90,12 +99,30 @@ then
     insert(new AcademicGoalDeviationPattern($sid));
 end
 
+// NEGATIVE TREND PREKO SCORE SNAPSHOT EVENTS
+// trend je detektovan kad najmanje tri uzastopna score snapshots pokazuju pogorsavajuce stanje
+
 rule "Negative trend by efficacy"
+salience 30
 when
-    $s1 : ScoreSnapshotEvent($sid : studentId, $i1 : dayIndex, $eff1 : efficacyScore)
-    $s2 : ScoreSnapshotEvent(studentId == $sid, $i2 : dayIndex, $eff2 : efficacyScore)
+    $s1 : ScoreSnapshotEvent(
+        $sid : studentId,
+        $i1 : dayIndex,
+        $eff1 : efficacyScore
+    )
+
+    $s2 : ScoreSnapshotEvent(
+        studentId == $sid,
+        $i2 : dayIndex,
+        $eff2 : efficacyScore
+    )
     eval($i2 == $i1 + 1 && $eff2 < $eff1)
-    $s3 : ScoreSnapshotEvent(studentId == $sid, $i3 : dayIndex, $eff3 : efficacyScore)
+
+    $s3 : ScoreSnapshotEvent(
+        studentId == $sid,
+        $i3 : dayIndex,
+        $eff3 : efficacyScore
+    )
     eval($i3 == $i2 + 1 && $eff3 < $eff2)
     not NegativeTrend(studentId == $sid)
 then
@@ -103,11 +130,26 @@ then
 end
 
 rule "Negative trend by exhaustion"
+salience 30
 when
-    $s1 : ScoreSnapshotEvent($sid : studentId, $i1 : dayIndex, $ex1 : exhaustionScore)
-    $s2 : ScoreSnapshotEvent(studentId == $sid, $i2 : dayIndex, $ex2 : exhaustionScore)
+    $s1 : ScoreSnapshotEvent(
+        $sid : studentId,
+        $i1 : dayIndex,
+        $ex1 : exhaustionScore
+    )
+
+    $s2 : ScoreSnapshotEvent(
+        studentId == $sid,
+        $i2 : dayIndex,
+        $ex2 : exhaustionScore
+    )
     eval($i2 == $i1 + 1 && $ex2 > $ex1)
-    $s3 : ScoreSnapshotEvent(studentId == $sid, $i3 : dayIndex, $ex3 : exhaustionScore)
+
+    $s3 : ScoreSnapshotEvent(
+        studentId == $sid,
+        $i3 : dayIndex,
+        $ex3 : exhaustionScore
+    )
     eval($i3 == $i2 + 1 && $ex3 > $ex2)
     not NegativeTrend(studentId == $sid)
 then
