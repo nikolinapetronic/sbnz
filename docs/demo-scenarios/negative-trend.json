@@ -1,0 +1,58 @@
+{
+  "studentId": "negativeTrendEfficacy",
+  "profileType": "DEFAULT",
+  "academicPeriod": "EXAM_PERIOD",
+  "dailyCheckIns": [
+    {
+      "dayIndex": 1,
+      "timestamp": "2026-06-10T10:00:00.000+00:00",
+      "sleepHours": 5,
+      "sleepQuality": "POOR",
+      "fatigue": 5,
+      "stress": 8,
+      "overload": 7,
+      "motivation": 7,
+      "studyMeaning": 7,
+      "concentration": 5,
+      "efficacy": 8,
+      "missedObligation": false,
+      "lowRecovery": false,
+      "supportScore": 6,
+      "copingStrategy": "PLANNING"
+    },
+    {
+      "dayIndex": 2,
+      "timestamp": "2026-06-11T10:00:00.000+00:00",
+      "sleepHours": 5,
+      "sleepQuality": "POOR",
+      "fatigue": 5,
+      "stress": 8,
+      "overload": 7,
+      "motivation": 7,
+      "studyMeaning": 7,
+      "concentration": 5,
+      "efficacy": 6,
+      "missedObligation": false,
+      "lowRecovery": false,
+      "supportScore": 6,
+      "copingStrategy": "PLANNING"
+    },
+    {
+      "dayIndex": 3,
+      "timestamp": "2026-06-12T10:00:00.000+00:00",
+      "sleepHours": 5,
+      "sleepQuality": "POOR",
+      "fatigue": 5,
+      "stress": 8,
+      "overload": 7,
+      "motivation": 7,
+      "studyMeaning": 7,
+      "concentration": 5,
+      "efficacy": 4,
+      "missedObligation": false,
+      "lowRecovery": false,
+      "supportScore": 6,
+      "copingStrategy": "PLANNING"
+    }
+  ]
+}

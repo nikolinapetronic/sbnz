@@ -1,0 +1,24 @@
+{
+  "studentId": "studentLow",
+  "profileType": "DEFAULT",
+  "academicPeriod": "REGULAR_CLASSES",
+  "dailyCheckIns": [
+    {
+      "dayIndex": 1,
+      "timestamp": "2026-06-12T10:00:00.000+00:00",
+      "sleepHours": 8,
+      "sleepQuality": "GOOD",
+      "fatigue": 2,
+      "stress": 3,
+      "overload": 3,
+      "motivation": 8,
+      "studyMeaning": 8,
+      "concentration": 8,
+      "efficacy": 8,
+      "missedObligation": false,
+      "lowRecovery": false,
+      "supportScore": 8,
+      "copingStrategy": "PLANNING"
+    }
+  ]
+}

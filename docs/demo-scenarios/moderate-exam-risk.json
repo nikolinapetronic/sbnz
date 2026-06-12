@@ -1,0 +1,24 @@
+{
+  "studentId": "templateExam",
+  "profileType": "DEFAULT",
+  "academicPeriod": "EXAM_PERIOD",
+  "dailyCheckIns": [
+    {
+      "dayIndex": 1,
+      "timestamp": "2026-06-12T10:00:00.000+00:00",
+      "sleepHours": 5,
+      "sleepQuality": "POOR",
+      "fatigue": 8,
+      "stress": 8,
+      "overload": 8,
+      "motivation": 7,
+      "studyMeaning": 7,
+      "concentration": 4,
+      "efficacy": 5,
+      "missedObligation": false,
+      "lowRecovery": false,
+      "supportScore": 8,
+      "copingStrategy": "PLANNING"
+    }
+  ]
+}
