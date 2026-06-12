@@ -9,4 +9,7 @@ public class CynicismScore extends AbstractScore {
         super(studentId, value);
     }
 
+    public CynicismScore(String studentId, int dayIndex, int value) {
+        super(studentId, dayIndex, value);
+    }
 }

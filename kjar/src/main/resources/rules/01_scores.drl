@@ -4,83 +4,385 @@ import com.sbnz.model.enums.CopingStrategy;
 import com.sbnz.model.enums.SleepQuality;
 
 import com.sbnz.model.events.DailyCheckInEvent;
+import com.sbnz.model.events.ScoreSnapshotEvent;
 import com.sbnz.model.profile.ThresholdProfile;
 
+import com.sbnz.model.scores.ScoreAdjustment;
 import com.sbnz.model.scores.ExhaustionScore;
 import com.sbnz.model.scores.CynicismScore;
 import com.sbnz.model.scores.EfficacyScore;
 
-rule "Create exhaustion score"
+
+// EXHAUSTION SCORE ADJUSTMENTS
+
+rule "Exhaustion adjustment - poor sleep duration"
+salience 100
 when
     $t : ThresholdProfile($sid : studentId)
-    $e : DailyCheckInEvent(studentId == $sid)
+    $e : DailyCheckInEvent(
+        studentId == $sid,
+        $day : dayIndex,
+        sleepHours < $t.minSleepHours
+    )
+    not ScoreAdjustment(
+        studentId == $sid,
+        dayIndex == $day,
+        dimension == "EXHAUSTION",
+        reason == "POOR_SLEEP_DURATION"
+    )
 then
-    int score = 0;
-
-    if ($e.getSleepHours() < $t.getMinSleepHours()) {
-        score += 3;
-    }
-    if ($e.getSleepQuality() == SleepQuality.POOR) {
-        score += 1;
-    }
-    if ($e.getStress() >= $t.getHighStressThreshold()) {
-        score += 3;
-    }
-    if ($e.getFatigue() >= 7) {
-        score += 2;
-    }
-    if ($e.isLowRecovery()) {
-        score += 2;
-    }
-    if ($e.getOverload() >= 7) {
-        score += 2;
-    }
-
-    insert(new ExhaustionScore($sid, score));
+    insert(new ScoreAdjustment($sid, $day, "EXHAUSTION", "POOR_SLEEP_DURATION", 3));
 end
 
-rule "Create cynicism score"
+rule "Exhaustion adjustment - poor sleep quality"
+salience 100
+when
+    $e : DailyCheckInEvent(
+        $sid : studentId,
+        $day : dayIndex,
+        sleepQuality == SleepQuality.POOR
+    )
+    not ScoreAdjustment(
+        studentId == $sid,
+        dayIndex == $day,
+        dimension == "EXHAUSTION",
+        reason == "POOR_SLEEP_QUALITY"
+    )
+then
+    insert(new ScoreAdjustment($sid, $day, "EXHAUSTION", "POOR_SLEEP_QUALITY", 1));
+end
+
+rule "Exhaustion adjustment - high stress"
+salience 100
 when
     $t : ThresholdProfile($sid : studentId)
-    $e : DailyCheckInEvent(studentId == $sid)
+    $e : DailyCheckInEvent(
+        studentId == $sid,
+        $day : dayIndex,
+        stress >= $t.highStressThreshold
+    )
+    not ScoreAdjustment(
+        studentId == $sid,
+        dayIndex == $day,
+        dimension == "EXHAUSTION",
+        reason == "HIGH_STRESS"
+    )
 then
-    int score = 0;
-
-    if ($e.getMotivation() <= 3) {
-        score += 4;
-    }
-    if ($e.getStudyMeaning() > 0 && $e.getStudyMeaning() <= 3) {
-        score += 2;
-    }
-    if ($e.isMissedObligation()) {
-        score += 3;
-    }
-    if ($e.getCopingStrategy() == CopingStrategy.AVOIDANCE
-        || $e.getCopingStrategy() == CopingStrategy.PROCRASTINATION
-        || $e.getCopingStrategy() == CopingStrategy.DENIAL) {
-        score += 2;
-    }
-
-    insert(new CynicismScore($sid, score));
+    insert(new ScoreAdjustment($sid, $day, "EXHAUSTION", "HIGH_STRESS", 3));
 end
 
-rule "Create efficacy score"
+rule "Exhaustion adjustment - high fatigue"
+salience 100
 when
-    $e : DailyCheckInEvent($sid : studentId)
+    $e : DailyCheckInEvent(
+        $sid : studentId,
+        $day : dayIndex,
+        fatigue >= 7
+    )
+    not ScoreAdjustment(
+        studentId == $sid,
+        dayIndex == $day,
+        dimension == "EXHAUSTION",
+        reason == "HIGH_FATIGUE"
+    )
 then
-    int score = $e.getEfficacy();
+    insert(new ScoreAdjustment($sid, $day, "EXHAUSTION", "HIGH_FATIGUE", 2));
+end
 
-    if ($e.getConcentration() <= 3) {
-        score -= 1;
+rule "Exhaustion adjustment - low recovery"
+salience 100
+when
+    $e : DailyCheckInEvent(
+        $sid : studentId,
+        $day : dayIndex,
+        lowRecovery == true
+    )
+    not ScoreAdjustment(
+        studentId == $sid,
+        dayIndex == $day,
+        dimension == "EXHAUSTION",
+        reason == "LOW_RECOVERY"
+    )
+then
+    insert(new ScoreAdjustment($sid, $day, "EXHAUSTION", "LOW_RECOVERY", 2));
+end
+
+rule "Exhaustion adjustment - high overload"
+salience 100
+when
+    $e : DailyCheckInEvent(
+        $sid : studentId,
+        $day : dayIndex,
+        overload >= 7
+    )
+    not ScoreAdjustment(
+        studentId == $sid,
+        dayIndex == $day,
+        dimension == "EXHAUSTION",
+        reason == "HIGH_OVERLOAD"
+    )
+then
+    insert(new ScoreAdjustment($sid, $day, "EXHAUSTION", "HIGH_OVERLOAD", 2));
+end
+
+
+// CYNICISM SCORE ADJUSTMENTS
+
+rule "Cynicism adjustment - low motivation"
+salience 100
+when
+    $e : DailyCheckInEvent(
+        $sid : studentId,
+        $day : dayIndex,
+        motivation <= 3
+    )
+    not ScoreAdjustment(
+        studentId == $sid,
+        dayIndex == $day,
+        dimension == "CYNICISM",
+        reason == "LOW_MOTIVATION"
+    )
+then
+    insert(new ScoreAdjustment($sid, $day, "CYNICISM", "LOW_MOTIVATION", 4));
+end
+
+rule "Cynicism adjustment - low study meaning"
+salience 100
+when
+    $e : DailyCheckInEvent(
+        $sid : studentId,
+        $day : dayIndex,
+        studyMeaning > 0,
+        studyMeaning <= 3
+    )
+    not ScoreAdjustment(
+        studentId == $sid,
+        dayIndex == $day,
+        dimension == "CYNICISM",
+        reason == "LOW_STUDY_MEANING"
+    )
+then
+    insert(new ScoreAdjustment($sid, $day, "CYNICISM", "LOW_STUDY_MEANING", 2));
+end
+
+rule "Cynicism adjustment - missed obligation"
+salience 100
+when
+    $e : DailyCheckInEvent(
+        $sid : studentId,
+        $day : dayIndex,
+        missedObligation == true
+    )
+    not ScoreAdjustment(
+        studentId == $sid,
+        dayIndex == $day,
+        dimension == "CYNICISM",
+        reason == "MISSED_OBLIGATION"
+    )
+then
+    insert(new ScoreAdjustment($sid, $day, "CYNICISM", "MISSED_OBLIGATION", 3));
+end
+
+rule "Cynicism adjustment - avoidance coping"
+salience 100
+when
+    $e : DailyCheckInEvent(
+        $sid : studentId,
+        $day : dayIndex,
+        copingStrategy == CopingStrategy.AVOIDANCE
+    )
+    not ScoreAdjustment(
+        studentId == $sid,
+        dayIndex == $day,
+        dimension == "CYNICISM",
+        reason == "AVOIDANCE_COPING"
+    )
+then
+    insert(new ScoreAdjustment($sid, $day, "CYNICISM", "AVOIDANCE_COPING", 2));
+end
+
+rule "Cynicism adjustment - procrastination coping"
+salience 100
+when
+    $e : DailyCheckInEvent(
+        $sid : studentId,
+        $day : dayIndex,
+        copingStrategy == CopingStrategy.PROCRASTINATION
+    )
+    not ScoreAdjustment(
+        studentId == $sid,
+        dayIndex == $day,
+        dimension == "CYNICISM",
+        reason == "PROCRASTINATION_COPING"
+    )
+then
+    insert(new ScoreAdjustment($sid, $day, "CYNICISM", "PROCRASTINATION_COPING", 2));
+end
+
+rule "Cynicism adjustment - denial coping"
+salience 100
+when
+    $e : DailyCheckInEvent(
+        $sid : studentId,
+        $day : dayIndex,
+        copingStrategy == CopingStrategy.DENIAL
+    )
+    not ScoreAdjustment(
+        studentId == $sid,
+        dayIndex == $day,
+        dimension == "CYNICISM",
+        reason == "DENIAL_COPING"
+    )
+then
+    insert(new ScoreAdjustment($sid, $day, "CYNICISM", "DENIAL_COPING", 2));
+end
+
+
+// EFFICACY SCORE ADJUSTMENTS
+
+rule "Efficacy adjustment - base self efficacy"
+salience 100
+when
+    $e : DailyCheckInEvent(
+        $sid : studentId,
+        $day : dayIndex,
+        $efficacy : efficacy
+    )
+    not ScoreAdjustment(
+        studentId == $sid,
+        dayIndex == $day,
+        dimension == "EFFICACY",
+        reason == "BASE_SELF_EFFICACY"
+    )
+then
+    insert(new ScoreAdjustment($sid, $day, "EFFICACY", "BASE_SELF_EFFICACY", $efficacy));
+end
+
+rule "Efficacy adjustment - low concentration"
+salience 100
+when
+    $e : DailyCheckInEvent(
+        $sid : studentId,
+        $day : dayIndex,
+        concentration <= 3
+    )
+    not ScoreAdjustment(
+        studentId == $sid,
+        dayIndex == $day,
+        dimension == "EFFICACY",
+        reason == "LOW_CONCENTRATION"
+    )
+then
+    insert(new ScoreAdjustment($sid, $day, "EFFICACY", "LOW_CONCENTRATION", -1));
+end
+
+rule "Efficacy adjustment - missed obligation"
+salience 100
+when
+    $e : DailyCheckInEvent(
+        $sid : studentId,
+        $day : dayIndex,
+        missedObligation == true
+    )
+    not ScoreAdjustment(
+        studentId == $sid,
+        dayIndex == $day,
+        dimension == "EFFICACY",
+        reason == "MISSED_OBLIGATION"
+    )
+then
+    insert(new ScoreAdjustment($sid, $day, "EFFICACY", "MISSED_OBLIGATION", -1));
+end
+
+
+// FINAL SCORE FACTS
+
+rule "Create exhaustion score from adjustments"
+salience 80
+when
+    $e : DailyCheckInEvent($sid : studentId, $day : dayIndex)
+    $total : Number() from accumulate(
+        ScoreAdjustment(
+            studentId == $sid,
+            dayIndex == $day,
+            dimension == "EXHAUSTION",
+            $value : value
+        ),
+        sum($value)
+    )
+    not ExhaustionScore(studentId == $sid, dayIndex == $day)
+then
+    insert(new ExhaustionScore($sid, $day, $total.intValue()));
+end
+
+rule "Create cynicism score from adjustments"
+salience 80
+when
+    $e : DailyCheckInEvent($sid : studentId, $day : dayIndex)
+    $total : Number() from accumulate(
+        ScoreAdjustment(
+            studentId == $sid,
+            dayIndex == $day,
+            dimension == "CYNICISM",
+            $value : value
+        ),
+        sum($value)
+    )
+    not CynicismScore(studentId == $sid, dayIndex == $day)
+then
+    insert(new CynicismScore($sid, $day, $total.intValue()));
+end
+
+rule "Create efficacy score from adjustments"
+salience 80
+when
+    $e : DailyCheckInEvent($sid : studentId, $day : dayIndex)
+    $total : Number() from accumulate(
+        ScoreAdjustment(
+            studentId == $sid,
+            dayIndex == $day,
+            dimension == "EFFICACY",
+            $value : value
+        ),
+        sum($value)
+    )
+    not EfficacyScore(studentId == $sid, dayIndex == $day)
+then
+    insert(new EfficacyScore($sid, $day, $total.intValue()));
+end
+
+rule "Normalize efficacy score minimum"
+salience 75
+when
+    $s : EfficacyScore(value < 1)
+then
+    modify($s) {
+        setValue(1)
     }
+end
 
-    if ($e.isMissedObligation()) {
-        score -= 1;
-    }
 
-    if (score < 1) {
-        score = 1;
-    }
+// SCORE SNAPSHOT EVENT
 
-    insert(new EfficacyScore($sid, score));
+rule "Create score snapshot event"
+salience 70
+when
+    $e : DailyCheckInEvent(
+        $sid : studentId,
+        $day : dayIndex,
+        $timestamp : timestamp
+    )
+    $ex : ExhaustionScore(studentId == $sid, dayIndex == $day)
+    $cy : CynicismScore(studentId == $sid, dayIndex == $day)
+    $ef : EfficacyScore(studentId == $sid, dayIndex == $day)
+    not ScoreSnapshotEvent(studentId == $sid, dayIndex == $day)
+then
+    insert(new ScoreSnapshotEvent(
+        $sid,
+        $timestamp,
+        $day,
+        $ex.getValue(),
+        $cy.getValue(),
+        $ef.getValue()
+    ));
 end

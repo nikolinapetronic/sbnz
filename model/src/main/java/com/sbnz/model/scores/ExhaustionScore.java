@@ -9,4 +9,7 @@ public class ExhaustionScore extends AbstractScore {
         super(studentId, value);
     }
 
+    public ExhaustionScore(String studentId, int dayIndex, int value) {
+        super(studentId, dayIndex, value);
+    }
 }

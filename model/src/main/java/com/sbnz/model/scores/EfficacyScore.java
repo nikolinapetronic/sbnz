@@ -9,4 +9,7 @@ public class EfficacyScore extends AbstractScore {
         super(studentId, value);
     }
     
+    public EfficacyScore(String studentId, int dayIndex, int value) {
+        super(studentId, dayIndex, value);
+    }
 }
