@@ -1,130 +1,436 @@
 <div class="page">
   <header class="hero">
-    <div>
+    <div class="hero-content">
       <p class="eyebrow">StudyGuard</p>
       <h1>Academic Burnout Risk Assessment</h1>
       <p class="hero-text">
-        Demo client for testing rule-based assessment, CEP patterns,
+        Rule-based assessment client for daily student check-ins, CEP patterns,
         template thresholds and recursive backward chaining.
+      </p>
+    </div>
+
+    <div class="hero-card">
+      <span class="hero-card-label">Current workflow</span>
+      <strong>Student assessment</strong>
+      <p>
+        Daily check-ins are converted into facts, indicators, patterns and final recommendations.
       </p>
     </div>
   </header>
 
-  <main class="layout">
-    <section class="card">
-      <div class="section-header">
-        <h2>Assessment request</h2>
-        <p>Select a prepared scenario or edit the JSON manually.</p>
-      </div>
-
-      <label class="label" for="scenario">Demo scenario</label>
-      <select
-        id="scenario"
-        class="select"
-        [(ngModel)]="selectedScenario"
-        (change)="onScenarioChange()"
+  <main class="content">
+    <section class="mode-switch">
+      <button
+        type="button"
+        class="mode-button"
+        [class.active]="selectedView === 'manual'"
+        (click)="selectView('manual')"
       >
-        <option *ngFor="let key of scenarioKeys" [value]="key">
-          {{ scenarios[key].label }}
-        </option>
-      </select>
-
-      <p class="scenario-description">
-        {{ scenarios[selectedScenario].description }}
-      </p>
-
-      <label class="label" for="requestBody">Request body</label>
-      <textarea
-        id="requestBody"
-        class="json-editor"
-        [(ngModel)]="requestBody"
-        spellcheck="false"
-      ></textarea>
-
-      <button class="primary-button" type="button" (click)="runAssessment()" [disabled]="loading">
-        {{ loading ? 'Running assessment...' : 'Run assessment' }}
+        <lucide-angular [img]="ClipboardCheckIcon" [size]="18"></lucide-angular>
+          Manual input
       </button>
 
-      <div class="error-box" *ngIf="errorMessage">
-        {{ errorMessage }}
-      </div>
+      <button
+        type="button"
+        class="mode-button"
+        [class.active]="selectedView === 'demo'"
+        (click)="selectView('demo')"
+      >
+        <lucide-angular [img]="FlaskConicalIcon" [size]="18"></lucide-angular>
+Demo scenarios
+      </button>
     </section>
 
-    <section class="card">
-      <div class="section-header">
-        <h2>Assessment result</h2>
-        <p>Final fact returned by the expert system.</p>
-      </div>
-
-      <div class="empty-state" *ngIf="!assessment && !errorMessage">
-        Run a scenario to see the assessment result.
-      </div>
-
-      <div class="result" *ngIf="assessment">
-        <div class="risk-badge" [ngClass]="getRiskClass(assessment.riskLevel)">
-          {{ assessment.riskLevel }}
-        </div>
-
-        <div class="result-grid">
+    <section class="layout">
+      <section class="card input-card" *ngIf="selectedView === 'manual'">
+        <div class="section-header">
           <div>
-            <span class="field-label">Student</span>
-            <strong>{{ assessment.studentId }}</strong>
+            <h2>Student daily check-in</h2>
+            <p>Enter student context and one or more daily self-report records.</p>
           </div>
 
-          <div>
-            <span class="field-label">Academic burnout pattern</span>
-            <strong>
-              {{ assessment.hasAcademicBurnoutPattern ? 'Detected' : 'Not detected' }}
-            </strong>
+          <button class="ghost-button" type="button" (click)="loadSevereManualExample()">
+            <lucide-angular [img]="ZapIcon" [size]="17"></lucide-angular>
+Load severe example
+          </button>
+        </div>
+
+        <div class="form-grid three">
+          <div class="form-field">
+            <label class="label" for="studentId">
+              <span class="field-icon">
+  <lucide-angular [img]="UserIcon" [size]="17"></lucide-angular>
+</span>
+Student ID
+            </label>
+            <input
+              id="studentId"
+              class="input"
+              type="text"
+              [(ngModel)]="manualForm.studentId"
+              placeholder="studentManual"
+            />
+          </div>
+
+          <div class="form-field">
+  <label class="label" for="profileType">
+    <span class="field-icon">
+      <lucide-angular [img]="GraduationCapIcon" [size]="17"></lucide-angular>
+    </span>
+    Student profile
+  </label>
+
+  <select id="profileType" class="select" [(ngModel)]="manualForm.profileType">
+    <option *ngFor="let profile of profileTypes" [value]="profile.value">
+      {{ profile.label }}
+    </option>
+  </select>
+</div>
+
+          <div class="form-field">
+            <label class="label" for="academicPeriod">
+              <span class="field-icon">
+  <lucide-angular [img]="BookOpenIcon" [size]="17"></lucide-angular>
+</span>
+Academic period
+            </label>
+            <select id="academicPeriod" class="select" [(ngModel)]="manualForm.academicPeriod">
+              <option *ngFor="let period of academicPeriods" [value]="period.value">
+                {{ period.label }}
+              </option>
+            </select>
           </div>
         </div>
 
-        <div class="result-block">
-          <span class="field-label">Dominant dimensions</span>
-          <p>{{ assessment.dominantDimensions }}</p>
+        <div class="days-header">
+          <div>
+            <h3>Daily records</h3>
+            <p>
+              Day index is generated automatically from the order of records.
+              The date is used to create event timestamps for CEP rules.
+            </p>
+          </div>
+
+          <button class="secondary-button" type="button" (click)="addManualDay()">
+            <lucide-angular [img]="PlusIcon" [size]="17"></lucide-angular>
+Add day
+          </button>
         </div>
 
-        <div class="result-block">
-          <span class="field-label">Explanation</span>
-          <p>{{ assessment.explanation }}</p>
+        <article class="day-card" *ngFor="let day of manualForm.dailyCheckIns; let i = index">
+          <div class="day-card-header">
+            <div>
+              <span class="day-number">Day {{ i + 1 }}</span>
+              <strong>{{ day.date }}</strong>
+            </div>
+
+            <button
+              class="danger-button"
+              type="button"
+              (click)="removeManualDay(i)"
+              [disabled]="manualForm.dailyCheckIns.length === 1"
+            >
+              <lucide-angular [img]="Trash2Icon" [size]="16"></lucide-angular>
+Remove
+            </button>
+          </div>
+
+          <div class="form-grid four">
+            <div class="form-field">
+              <label class="label">
+                <span class="field-icon">
+  <lucide-angular [img]="CalendarIcon" [size]="17"></lucide-angular>
+</span>
+Date
+              </label>
+              <input class="input" type="date" [(ngModel)]="day.date" />
+            </div>
+
+            <div class="form-field">
+              <label class="label">
+                <span class="field-icon">
+  <lucide-angular [img]="MoonIcon" [size]="17"></lucide-angular>
+</span>
+Sleep hours
+              </label>
+              <input
+                class="input"
+                type="number"
+                min="0"
+                max="14"
+                step="0.5"
+                [(ngModel)]="day.sleepHours"
+              />
+            </div>
+
+            <div class="form-field">
+              <label class="label">
+                <span class="field-icon">
+  <lucide-angular [img]="SparklesIcon" [size]="17"></lucide-angular>
+</span>
+Sleep quality
+              </label>
+              <select class="select" [(ngModel)]="day.sleepQuality">
+                <option *ngFor="let quality of sleepQualities" [value]="quality.value">
+                  {{ quality.label }}
+                </option>
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label class="label">
+                <span class="field-icon">
+  <lucide-angular [img]="CompassIcon" [size]="17"></lucide-angular>
+</span>
+Coping strategy
+              </label>
+              <select class="select" [(ngModel)]="day.copingStrategy">
+                <option *ngFor="let strategy of copingStrategies" [value]="strategy.value">
+                  {{ strategy.label }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="slider-grid">
+            <label class="range-field">
+              <span>
+                <span><lucide-angular [img]="BrainIcon" [size]="16"></lucide-angular> Fatigue</span>
+                <strong>{{ day.fatigue }}</strong>
+              </span>
+              <input type="range" min="1" max="10" [(ngModel)]="day.fatigue" />
+            </label>
+
+            <label class="range-field">
+              <span>
+                <span><lucide-angular [img]="FlameIcon" [size]="16"></lucide-angular> Stress</span>
+                <strong>{{ day.stress }}</strong>
+              </span>
+              <input type="range" min="1" max="10" [(ngModel)]="day.stress" />
+            </label>
+
+            <label class="range-field">
+              <span>
+                <span><lucide-angular [img]="BoxIcon" [size]="16"></lucide-angular> Overload</span>
+                <strong>{{ day.overload }}</strong>
+              </span>
+              <input type="range" min="1" max="10" [(ngModel)]="day.overload" />
+            </label>
+
+            <label class="range-field">
+              <span>
+                <span><lucide-angular [img]="RocketIcon" [size]="16"></lucide-angular> Motivation</span>
+                <strong>{{ day.motivation }}</strong>
+              </span>
+              <input type="range" min="1" max="10" [(ngModel)]="day.motivation" />
+            </label>
+
+            <label class="range-field">
+              <span>
+                <span><lucide-angular [img]="LightbulbIcon" [size]="16"></lucide-angular> Study meaning</span>
+                <strong>{{ day.studyMeaning }}</strong>
+              </span>
+              <input type="range" min="1" max="10" [(ngModel)]="day.studyMeaning" />
+            </label>
+
+            <label class="range-field">
+              <span>
+                <span><lucide-angular [img]="TargetIcon" [size]="16"></lucide-angular> Concentration</span>
+                <strong>{{ day.concentration }}</strong>
+              </span>
+              <input type="range" min="1" max="10" [(ngModel)]="day.concentration" />
+            </label>
+
+            <label class="range-field">
+              <span>
+                <span><lucide-angular [img]="TrendingUpIcon" [size]="16"></lucide-angular> Academic efficacy</span>
+                <strong>{{ day.efficacy }}</strong>
+              </span>
+              <input type="range" min="1" max="10" [(ngModel)]="day.efficacy" />
+            </label>
+
+            <label class="range-field">
+              <span>
+                <span><lucide-angular [img]="HandshakeIcon" [size]="16"></lucide-angular> Support score</span>
+                <strong>{{ day.supportScore }}</strong>
+              </span>
+              <input type="range" min="1" max="10" [(ngModel)]="day.supportScore" />
+            </label>
+          </div>
+
+          <div class="checkbox-row">
+            <label class="checkbox-field">
+              <input type="checkbox" [(ngModel)]="day.missedObligation" />
+              <span>
+  <lucide-angular [img]="ClipboardCheckIcon" [size]="16"></lucide-angular>
+  Missed obligation
+</span>
+            </label>
+
+            <label class="checkbox-field">
+              <input type="checkbox" [(ngModel)]="day.lowRecovery" />
+              <span>
+  <lucide-angular [img]="BatteryLowIcon" [size]="16"></lucide-angular>
+  Low recovery
+</span>
+            </label>
+          </div>
+        </article>
+
+        <div class="action-row">
+          <button class="primary-button" type="button" (click)="runManualAssessment()" [disabled]="loading">
+            {{ loading ? 'Running assessment...' : 'Run assessment' }}
+          </button>
+
+          <button class="secondary-button muted" type="button" (click)="resetManualForm()">
+            <lucide-angular [img]="RefreshCwIcon" [size]="16"></lucide-angular>
+Reset form
+          </button>
         </div>
 
-        <div class="result-block">
-          <span class="field-label">Activated evidence</span>
+        <div class="error-box" *ngIf="errorMessage">
+          {{ errorMessage }}
+        </div>
+      </section>
 
-          <ul class="tag-list" *ngIf="assessment.activatedEvidence.length; else noEvidence">
-            <li *ngFor="let item of assessment.activatedEvidence">
-              {{ item }}
-            </li>
-          </ul>
-
-          <ng-template #noEvidence>
-            <p>No activated evidence.</p>
-          </ng-template>
+      <section class="card input-card" *ngIf="selectedView === 'demo'">
+        <div class="section-header">
+          <div>
+            <h2>Demo scenario request</h2>
+            <p>Select a prepared scenario or edit the JSON manually.</p>
+          </div>
         </div>
 
-        <div class="result-block">
-          <span class="field-label">Recommendations</span>
+        <label class="label" for="scenario">
+          <span class="field-icon">
+  <lucide-angular [img]="FlaskConicalIcon" [size]="17"></lucide-angular>
+</span>
+Demo scenario
+        </label>
+        <select
+          id="scenario"
+          class="select"
+          [(ngModel)]="selectedScenario"
+          (change)="onScenarioChange()"
+        >
+          <option *ngFor="let key of scenarioKeys" [value]="key">
+            {{ scenarios[key].label }}
+          </option>
+        </select>
 
-          <ul
-            class="tag-list recommendations"
-            *ngIf="assessment.recommendations.length; else noRecommendations"
-          >
-            <li *ngFor="let item of assessment.recommendations">
-              {{ item }}
-            </li>
-          </ul>
+        <p class="scenario-description">
+          {{ scenarios[selectedScenario].description }}
+        </p>
 
-          <ng-template #noRecommendations>
-            <p>No recommendations.</p>
-          </ng-template>
+        <label class="label" for="requestBody">
+          <span class="field-icon">
+  <lucide-angular [img]="FileJsonIcon" [size]="17"></lucide-angular>
+</span>
+Request body
+        </label>
+        <textarea
+          id="requestBody"
+          class="json-editor"
+          [(ngModel)]="requestBody"
+          spellcheck="false"
+        ></textarea>
+
+        <button class="primary-button" type="button" (click)="runDemoAssessment()" [disabled]="loading">
+          {{ loading ? 'Running assessment...' : 'Run assessment' }}
+        </button>
+
+        <div class="error-box" *ngIf="errorMessage">
+          {{ errorMessage }}
+        </div>
+      </section>
+
+      <section class="card result-card">
+        <div class="section-header">
+          <div>
+            <h2>Assessment result</h2>
+            <p>Final fact returned by the expert system.</p>
+          </div>
         </div>
 
-        <details class="raw-json">
-          <summary>Raw JSON response</summary>
-          <pre>{{ assessment | json }}</pre>
-        </details>
-      </div>
+        <div class="empty-state" *ngIf="!assessment && !errorMessage">
+          Run an assessment to see risk level, activated evidence and recommendations.
+        </div>
+
+        <div class="result" *ngIf="assessment">
+          <div class="result-top">
+            <div class="risk-badge" [ngClass]="getRiskClass(assessment.riskLevel)">
+              {{ assessment.riskLevel }}
+            </div>
+
+            <div class="pattern-pill" [class.detected]="assessment.hasAcademicBurnoutPattern">
+              {{ assessment.hasAcademicBurnoutPattern ? 'Burnout pattern detected' : 'Pattern not detected' }}
+            </div>
+          </div>
+
+          <div class="result-grid">
+            <div>
+              <span class="field-label">Student</span>
+              <strong>{{ assessment.studentId }}</strong>
+            </div>
+
+            <div>
+              <span class="field-label">Processed days</span>
+              <strong>{{ submittedRequest?.dailyCheckIns?.length || 0 }}</strong>
+            </div>
+          </div>
+
+          <div class="result-block">
+            <span class="field-label">Dominant dimensions</span>
+            <p>{{ assessment.dominantDimensions }}</p>
+          </div>
+
+          <div class="result-block">
+            <span class="field-label">Explanation</span>
+            <p>{{ assessment.explanation }}</p>
+          </div>
+
+          <div class="result-block">
+            <span class="field-label">Activated evidence</span>
+
+            <ul class="tag-list" *ngIf="assessment.activatedEvidence.length; else noEvidence">
+              <li *ngFor="let item of assessment.activatedEvidence">
+                {{ item }}
+              </li>
+            </ul>
+
+            <ng-template #noEvidence>
+              <p>No activated evidence.</p>
+            </ng-template>
+          </div>
+
+          <div class="result-block">
+            <span class="field-label">Recommendations</span>
+
+            <ul
+              class="tag-list recommendations"
+              *ngIf="assessment.recommendations.length; else noRecommendations"
+            >
+              <li *ngFor="let item of assessment.recommendations">
+                {{ item }}
+              </li>
+            </ul>
+
+            <ng-template #noRecommendations>
+              <p>No recommendations.</p>
+            </ng-template>
+          </div>
+
+          <details class="raw-json" *ngIf="submittedRequest">
+            <summary>Submitted request</summary>
+            <pre>{{ submittedRequest | json }}</pre>
+          </details>
+
+          <details class="raw-json">
+            <summary>Raw JSON response</summary>
+            <pre>{{ assessment | json }}</pre>
+          </details>
+        </div>
+      </section>
     </section>
   </main>
 </div>
