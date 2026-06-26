@@ -1,0 +1,404 @@
+@startuml StudyGuardClassDiagram
+
+top to bottom direction
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam nodesep 18
+skinparam ranksep 22
+hide circle
+hide empty methods
+
+title StudyGuard - klasni dijagram
+
+' =========================
+' ENUMS
+' =========================
+package "Enums" {
+  enum StudentProfile {
+    DEFAULT
+    FRESHMAN
+    WORKING_STUDENT
+    FINAL_YEAR
+  }
+
+  enum AcademicPeriod {
+    REGULAR_CLASSES
+    MIDTERM_WEEK
+    EXAM_PERIOD
+    AFTER_EXAM_PERIOD
+  }
+
+  enum SleepQuality {
+    POOR
+    MEDIUM
+    GOOD
+  }
+
+  enum CopingStrategy {
+    PLANNING
+    ACTIVE_PROBLEM_SOLVING
+    SEEKING_SUPPORT
+    AVOIDANCE
+    DENIAL
+    PROCRASTINATION
+  }
+
+  enum RiskLevel {
+    LOW_RISK
+    MODERATE_RISK
+    HIGH_RISK
+    SEVERE_RISK
+  }
+
+  enum RecommendationType {
+    REST_AND_RECOVERY
+    STUDY_PLAN_RESTRUCTURING
+    GOAL_REEVALUATION
+    SEEK_ACADEMIC_SUPPORT
+    SEEK_COUNSELING_SUPPORT
+    MONITOR_NEXT_7_DAYS
+  }
+}
+
+StudentProfile -[hidden]down-> AcademicPeriod
+AcademicPeriod -[hidden]down-> SleepQuality
+SleepQuality -[hidden]down-> CopingStrategy
+CopingStrategy -[hidden]down-> RiskLevel
+RiskLevel -[hidden]down-> RecommendationType
+
+' =========================
+' REQUEST / INPUT
+' =========================
+package "Request & Input" {
+
+  class AssessmentRequest <<DTO>> {
+    studentId : String
+    profileType : StudentProfile
+    academicPeriod : AcademicPeriod
+    dailyCheckIns : List<DailyCheckInEvent>
+  }
+
+  class DailyCheckInEvent <<input event>> {
+    studentId : String
+    timestamp : Date
+    dayIndex : int
+    sleepHours : double
+    sleepQuality : SleepQuality
+    fatigue : int
+    stress : int
+    overload : int
+    motivation : int
+    studyMeaning : int
+    concentration : int
+    efficacy : int
+    missedObligation : boolean
+    lowRecovery : boolean
+    supportScore : int
+    copingStrategy : CopingStrategy
+  }
+
+  class ScoreSnapshotEvent <<trend event>> {
+    studentId : String
+    timestamp : Date
+    dayIndex : int
+    exhaustionScore : int
+    cynicismScore : int
+    efficacyScore : int
+  }
+
+  class StudentContext <<context fact>> {
+    profileType : StudentProfile
+    academicPeriod : AcademicPeriod
+  }
+
+  class ThresholdProfile <<template configuration fact>> {
+    studentId : String
+    profileType : StudentProfile
+    academicPeriod : AcademicPeriod
+    minSleepHours : double
+    highStressThreshold : int
+    lowEfficacyThreshold : int
+    maxMissedObligations : int
+    exhaustionIndicatorThreshold : int
+    cynicismIndicatorThreshold : int
+  }
+}
+
+AssessmentRequest --> StudentProfile
+AssessmentRequest --> AcademicPeriod
+AssessmentRequest "1" o-- "0..*" DailyCheckInEvent
+DailyCheckInEvent --> SleepQuality
+DailyCheckInEvent --> CopingStrategy
+StudentContext --> StudentProfile
+StudentContext --> AcademicPeriod
+ThresholdProfile --> StudentProfile
+ThresholdProfile --> AcademicPeriod
+
+AssessmentRequest -[hidden]down-> DailyCheckInEvent
+DailyCheckInEvent -[hidden]down-> ScoreSnapshotEvent
+ScoreSnapshotEvent -[hidden]down-> StudentContext
+StudentContext -[hidden]down-> ThresholdProfile
+
+' =========================
+' BASE FACTS
+' =========================
+package "Base Facts" {
+  class BaseFact {
+    studentId : String
+  }
+
+  class ScoreAdjustment <<derived fact>> {
+    dayIndex : int
+    dimension : String
+    reason : String
+    value : int
+  }
+
+  abstract class AbstractScore <<derived fact>> {
+    dayIndex : int
+    value : int
+  }
+
+  abstract class AbstractIndicator <<marker>>
+  abstract class AbstractPattern <<marker>>
+  abstract class AbstractFactor <<marker>>
+  abstract class AbstractRiskFact <<derived fact>>
+}
+
+BaseFact <|-- StudentContext
+BaseFact <|-- ThresholdProfile
+BaseFact <|-- ScoreAdjustment
+BaseFact <|-- AbstractScore
+BaseFact <|-- AbstractIndicator
+BaseFact <|-- AbstractPattern
+BaseFact <|-- AbstractFactor
+BaseFact <|-- AbstractRiskFact
+
+ScoreAdjustment -[hidden]down-> AbstractScore
+AbstractScore -[hidden]down-> AbstractIndicator
+AbstractIndicator -[hidden]down-> AbstractPattern
+AbstractPattern -[hidden]down-> AbstractFactor
+AbstractFactor -[hidden]down-> AbstractRiskFact
+
+' =========================
+' SCORES
+' =========================
+package "Scores" {
+  class ExhaustionScore <<score>>
+  class CynicismScore <<score>>
+  class EfficacyScore <<score>>
+}
+
+AbstractScore <|-- ExhaustionScore
+AbstractScore <|-- CynicismScore
+AbstractScore <|-- EfficacyScore
+
+ExhaustionScore -[hidden]down-> CynicismScore
+CynicismScore -[hidden]down-> EfficacyScore
+
+' =========================
+' INDICATORS
+' =========================
+package "Indicators" {
+  class ExhaustionIndicator <<marker>>
+  class CynicismIndicator <<marker>>
+  class ReducedEfficacyIndicator <<marker>>
+}
+
+AbstractIndicator <|-- ExhaustionIndicator
+AbstractIndicator <|-- CynicismIndicator
+AbstractIndicator <|-- ReducedEfficacyIndicator
+
+ExhaustionIndicator -[hidden]down-> CynicismIndicator
+CynicismIndicator -[hidden]down-> ReducedEfficacyIndicator
+
+' =========================
+' PATTERNS
+' =========================
+package "Patterns" {
+  class SustainedPoorSleepPattern <<CEP marker>>
+  class SustainedStressPattern <<CEP marker>>
+  class LowRecoveryPattern <<CEP marker>>
+  class AvoidancePattern <<CEP marker>>
+  class RepeatedLowMotivationPattern <<CEP marker>>
+  class AcademicGoalDeviationPattern <<CEP marker>>
+  class NegativeTrend <<trend marker>>
+  class BurnoutDevelopmentPattern <<marker>>
+}
+
+AbstractPattern <|-- SustainedPoorSleepPattern
+AbstractPattern <|-- SustainedStressPattern
+AbstractPattern <|-- LowRecoveryPattern
+AbstractPattern <|-- AvoidancePattern
+AbstractPattern <|-- RepeatedLowMotivationPattern
+AbstractPattern <|-- AcademicGoalDeviationPattern
+AbstractPattern <|-- NegativeTrend
+AbstractPattern <|-- BurnoutDevelopmentPattern
+
+SustainedPoorSleepPattern -[hidden]down-> SustainedStressPattern
+SustainedStressPattern -[hidden]down-> LowRecoveryPattern
+LowRecoveryPattern -[hidden]down-> AvoidancePattern
+AvoidancePattern -[hidden]down-> RepeatedLowMotivationPattern
+RepeatedLowMotivationPattern -[hidden]down-> AcademicGoalDeviationPattern
+AcademicGoalDeviationPattern -[hidden]down-> NegativeTrend
+NegativeTrend -[hidden]down-> BurnoutDevelopmentPattern
+
+' =========================
+' FACTORS
+' =========================
+package "Factors" {
+  class LowSupportRiskFactor <<marker>>
+  class MaladaptiveCopingFactor <<marker>>
+  class ProtectiveSupportFactor <<marker>>
+}
+
+AbstractFactor <|-- LowSupportRiskFactor
+AbstractFactor <|-- MaladaptiveCopingFactor
+AbstractFactor <|-- ProtectiveSupportFactor
+
+LowSupportRiskFactor -[hidden]down-> MaladaptiveCopingFactor
+MaladaptiveCopingFactor -[hidden]down-> ProtectiveSupportFactor
+
+' =========================
+' RISK & OUTPUT
+' =========================
+package "Risk & Output" {
+  class LowBurnoutRisk <<risk marker>>
+  class ModerateBurnoutRisk <<risk marker>>
+  class HighBurnoutRisk <<risk marker>>
+  class SevereRiskPattern <<risk marker>>
+  class HighRiskWithSupportResources <<risk marker>>
+  class ModerateRiskWithProtectiveFactors <<risk marker>>
+
+  class DominantDimension <<derived fact>> {
+    value : String
+  }
+
+  class RiskAssessment <<final output>> {
+    riskLevel : RiskLevel
+    dominantDimensions : String
+    activatedEvidence : List<String>
+    recommendations : List<RecommendationType>
+    explanation : String
+    hasAcademicBurnoutPattern : boolean
+  }
+}
+
+AbstractRiskFact <|-- LowBurnoutRisk
+AbstractRiskFact <|-- ModerateBurnoutRisk
+AbstractRiskFact <|-- HighBurnoutRisk
+AbstractRiskFact <|-- SevereRiskPattern
+AbstractRiskFact <|-- HighRiskWithSupportResources
+AbstractRiskFact <|-- ModerateRiskWithProtectiveFactors
+AbstractRiskFact <|-- RiskAssessment
+
+BaseFact <|-- DominantDimension
+
+LowBurnoutRisk -[hidden]down-> ModerateBurnoutRisk
+ModerateBurnoutRisk -[hidden]down-> HighBurnoutRisk
+HighBurnoutRisk -[hidden]down-> SevereRiskPattern
+SevereRiskPattern -[hidden]down-> HighRiskWithSupportResources
+HighRiskWithSupportResources -[hidden]down-> ModerateRiskWithProtectiveFactors
+ModerateRiskWithProtectiveFactors -[hidden]down-> DominantDimension
+DominantDimension -[hidden]down-> RiskAssessment
+
+RiskAssessment --> RiskLevel
+RiskAssessment --> RecommendationType
+RiskAssessment ..> DominantDimension : uses
+
+' =========================
+' BACKWARD CHAINING
+' =========================
+package "Backward Chaining" {
+  class EvidenceNode <<evidence fact>> {
+    name : String
+  }
+
+  class EvidenceRelation <<evidence relation>> {
+    child : String
+    parent : String
+  }
+}
+
+BaseFact <|-- EvidenceNode
+EvidenceRelation --> EvidenceNode : connects evidence
+RiskAssessment ..> EvidenceNode : uses query result
+
+EvidenceNode -[hidden]down-> EvidenceRelation
+
+' =========================
+' SERVICE
+' =========================
+package "Service Layer" {
+  class ServiceApplication <<Spring Boot app>> {
+    kieContainer() : KieContainer
+  }
+
+  class KieContainer <<Drools>>
+  class KieSession <<Drools session>>
+
+  class AssessmentController <<REST controller>> {
+    assess(request) : RiskAssessment
+  }
+
+  class AssessmentService <<service>> {
+    assess(request) : RiskAssessment
+    prepareEvents(...) : List<DailyCheckInEvent>
+    findRiskAssessment(...) : RiskAssessment
+    createLowRiskAssessment(...) : RiskAssessment
+    hasAcademicBurnoutPattern(...) : boolean
+  }
+}
+
+ServiceApplication -[hidden]down-> KieContainer
+KieContainer -[hidden]down-> KieSession
+KieSession -[hidden]down-> AssessmentController
+AssessmentController -[hidden]down-> AssessmentService
+
+ServiceApplication --> KieContainer
+KieContainer --> KieSession
+
+AssessmentController --> AssessmentRequest
+AssessmentController --> RiskAssessment
+AssessmentController --> AssessmentService
+
+AssessmentService --> KieContainer
+AssessmentService ..> KieSession : inserts facts / fires rules
+AssessmentService --> StudentContext
+AssessmentService --> DailyCheckInEvent
+AssessmentService --> ScoreSnapshotEvent
+AssessmentService --> RiskAssessment
+AssessmentService ..> EvidenceNode : getQueryResults
+AssessmentService ..> EvidenceRelation : recursive evidence graph
+
+' =========================
+' REASONING FLOW
+' =========================
+DailyCheckInEvent ..> ScoreAdjustment : score rules
+ScoreAdjustment ..> AbstractScore : accumulate
+AbstractScore ..> AbstractIndicator : indicator rules
+DailyCheckInEvent ..> AbstractPattern : CEP rules
+ScoreSnapshotEvent ..> NegativeTrend : trend rule
+DailyCheckInEvent ..> AbstractFactor : factor rules
+AbstractIndicator ..> AbstractRiskFact : risk rules
+AbstractPattern ..> AbstractRiskFact : risk rules
+AbstractFactor ..> AbstractRiskFact : risk rules
+AbstractRiskFact ..> RiskAssessment : final rule
+EvidenceNode ..> RiskAssessment : backward chaining flag
+
+' =========================
+' GLOBAL VERTICAL ORDER
+' =========================
+RecommendationType -[hidden]down-> AssessmentRequest
+ThresholdProfile -[hidden]down-> BaseFact
+AbstractRiskFact -[hidden]down-> ExhaustionScore
+EfficacyScore -[hidden]down-> ExhaustionIndicator
+ReducedEfficacyIndicator -[hidden]down-> SustainedPoorSleepPattern
+BurnoutDevelopmentPattern -[hidden]down-> LowSupportRiskFactor
+ProtectiveSupportFactor -[hidden]down-> LowBurnoutRisk
+RiskAssessment -[hidden]down-> EvidenceNode
+EvidenceRelation -[hidden]down-> ServiceApplication
+
+@enduml
