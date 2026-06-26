@@ -1,0 +1,24 @@
+{
+  "studentId": "templateRegularClasses",
+  "profileType": "DEFAULT",
+  "academicPeriod": "REGULAR_CLASSES",
+  "dailyCheckIns": [
+    {
+      "dayIndex": 1,
+      "timestamp": "2026-06-25T10:00:00.000Z",
+      "sleepHours": 5,
+      "sleepQuality": "POOR",
+      "fatigue": 7,
+      "stress": 7,
+      "overload": 7,
+      "motivation": 7,
+      "studyMeaning": 7,
+      "concentration": 7,
+      "efficacy": 5,
+      "missedObligation": false,
+      "lowRecovery": false,
+      "supportScore": 8,
+      "copingStrategy": "PLANNING"
+    }
+  ]
+}
