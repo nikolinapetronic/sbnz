@@ -210,7 +210,7 @@ export class App {
       academicPeriod: 'EXAM_PERIOD',
       dailyCheckIns: [
         {
-          date: '2026-06-09',
+          date: recentDate(3),
           sleepHours: 5,
           sleepQuality: 'POOR',
           fatigue: 8,
@@ -226,7 +226,7 @@ export class App {
           copingStrategy: 'AVOIDANCE'
         },
         {
-          date: '2026-06-10',
+          date: recentDate(2),
           sleepHours: 5,
           sleepQuality: 'POOR',
           fatigue: 8,
@@ -242,7 +242,7 @@ export class App {
           copingStrategy: 'AVOIDANCE'
         },
         {
-          date: '2026-06-11',
+          date: recentDate(1),
           sleepHours: 5,
           sleepQuality: 'POOR',
           fatigue: 9,
@@ -258,7 +258,7 @@ export class App {
           copingStrategy: 'PROCRASTINATION'
         },
         {
-          date: '2026-06-12',
+          date: recentDate(0),
           sleepHours: 5,
           sleepQuality: 'POOR',
           fatigue: 9,
@@ -389,4 +389,10 @@ export class App {
   private toBackendTimestamp(date: string): string {
     return new Date(`${date}T10:00:00.000Z`).toISOString();
   }
+}
+
+function recentDate(daysAgo: number): string {
+  const date = new Date();
+  date.setUTCDate(date.getUTCDate() - daysAgo);
+  return date.toISOString().split("T")[0];
 }

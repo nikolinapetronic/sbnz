@@ -50,7 +50,7 @@ export const scenarios: Record<string, DemoScenario> = {
       dailyCheckIns: [
         {
           dayIndex: 1,
-          timestamp: '2026-06-12T10:00:00.000+00:00',
+          timestamp: recentTimestamp(0),
           sleepHours: 8,
           sleepQuality: 'GOOD',
           fatigue: 2,
@@ -79,7 +79,7 @@ export const scenarios: Record<string, DemoScenario> = {
       dailyCheckIns: [
         {
           dayIndex: 1,
-          timestamp: '2026-06-12T10:00:00.000+00:00',
+          timestamp: recentTimestamp(0),
           sleepHours: 5,
           sleepQuality: 'POOR',
           fatigue: 8,
@@ -108,7 +108,7 @@ export const scenarios: Record<string, DemoScenario> = {
       dailyCheckIns: [
         {
           dayIndex: 1,
-          timestamp: '2026-06-10T10:00:00.000+00:00',
+          timestamp: recentTimestamp(2),
           sleepHours: 5,
           sleepQuality: 'POOR',
           fatigue: 5,
@@ -125,7 +125,7 @@ export const scenarios: Record<string, DemoScenario> = {
         },
         {
           dayIndex: 2,
-          timestamp: '2026-06-11T10:00:00.000+00:00',
+          timestamp: recentTimestamp(1),
           sleepHours: 5,
           sleepQuality: 'POOR',
           fatigue: 5,
@@ -142,7 +142,7 @@ export const scenarios: Record<string, DemoScenario> = {
         },
         {
           dayIndex: 3,
-          timestamp: '2026-06-12T10:00:00.000+00:00',
+          timestamp: recentTimestamp(0),
           sleepHours: 5,
           sleepQuality: 'POOR',
           fatigue: 5,
@@ -171,7 +171,7 @@ export const scenarios: Record<string, DemoScenario> = {
       dailyCheckIns: [
         {
           dayIndex: 1,
-          timestamp: '2026-06-09T10:00:00.000+00:00',
+          timestamp: recentTimestamp(3),
           sleepHours: 5,
           sleepQuality: 'POOR',
           fatigue: 8,
@@ -188,7 +188,7 @@ export const scenarios: Record<string, DemoScenario> = {
         },
         {
           dayIndex: 2,
-          timestamp: '2026-06-10T10:00:00.000+00:00',
+          timestamp: recentTimestamp(2),
           sleepHours: 5,
           sleepQuality: 'POOR',
           fatigue: 8,
@@ -205,7 +205,7 @@ export const scenarios: Record<string, DemoScenario> = {
         },
         {
           dayIndex: 3,
-          timestamp: '2026-06-11T10:00:00.000+00:00',
+          timestamp: recentTimestamp(1),
           sleepHours: 5,
           sleepQuality: 'POOR',
           fatigue: 9,
@@ -222,7 +222,7 @@ export const scenarios: Record<string, DemoScenario> = {
         },
         {
           dayIndex: 4,
-          timestamp: '2026-06-12T10:00:00.000+00:00',
+          timestamp: recentTimestamp(0),
           sleepHours: 5,
           sleepQuality: 'POOR',
           fatigue: 9,
@@ -241,3 +241,10 @@ export const scenarios: Record<string, DemoScenario> = {
     }
   }
 };
+
+function recentTimestamp(daysAgo: number): string {
+  const date = new Date();
+  date.setUTCDate(date.getUTCDate() - daysAgo);
+  date.setUTCHours(10, 0, 0, 0);
+  return date.toISOString();
+}
