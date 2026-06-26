@@ -127,7 +127,7 @@ export class App {
 
   copingStrategies = [
     { value: 'PLANNING', label: 'Planning' },
-    { value: 'ACTIVE_COPING', label: 'Active coping' },
+    { value: 'ACTIVE_PROBLEM_SOLVING', label: 'Active problem solving' },
     { value: 'SEEKING_SUPPORT', label: 'Seeking support' },
     { value: 'AVOIDANCE', label: 'Avoidance' },
     { value: 'DENIAL', label: 'Denial' },
