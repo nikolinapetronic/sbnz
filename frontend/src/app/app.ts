@@ -100,6 +100,8 @@ export class App {
   selectedScenario = 'severeBurnoutPattern';
   requestBody = this.formatJson(scenarios[this.selectedScenario].body);
 
+  selectedManualScenario = '';
+
   assessment: RiskAssessment | null = null;
   submittedRequest: AssessmentRequest | null = null;
   errorMessage = '';
@@ -160,6 +162,21 @@ export class App {
     this.errorMessage = '';
   }
 
+loadSelectedManualScenario(): void {
+  if (!this.selectedManualScenario) {
+    return;
+  }
+
+  const scenario = scenarios[this.selectedManualScenario as keyof typeof scenarios];
+
+  this.manualForm = this.toManualForm(scenario.body);
+  this.requestBody = this.formatJson(scenario.body);
+
+  this.assessment = null;
+  this.submittedRequest = null;
+  this.errorMessage = '';
+}
+
   runDemoAssessment(): void {
     let parsedBody: AssessmentRequest;
 
@@ -204,82 +221,9 @@ export class App {
   }
 
   loadSevereManualExample(): void {
-    this.manualForm = {
-      studentId: 'studentManualSevere',
-      profileType: 'DEFAULT',
-      academicPeriod: 'EXAM_PERIOD',
-      dailyCheckIns: [
-        {
-          date: recentDate(3),
-          sleepHours: 5,
-          sleepQuality: 'POOR',
-          fatigue: 8,
-          stress: 8,
-          overload: 8,
-          motivation: 3,
-          studyMeaning: 3,
-          concentration: 3,
-          efficacy: 5,
-          missedObligation: false,
-          lowRecovery: true,
-          supportScore: 6,
-          copingStrategy: 'AVOIDANCE'
-        },
-        {
-          date: recentDate(2),
-          sleepHours: 5,
-          sleepQuality: 'POOR',
-          fatigue: 8,
-          stress: 8,
-          overload: 8,
-          motivation: 3,
-          studyMeaning: 3,
-          concentration: 3,
-          efficacy: 4,
-          missedObligation: true,
-          lowRecovery: true,
-          supportScore: 6,
-          copingStrategy: 'AVOIDANCE'
-        },
-        {
-          date: recentDate(1),
-          sleepHours: 5,
-          sleepQuality: 'POOR',
-          fatigue: 9,
-          stress: 9,
-          overload: 9,
-          motivation: 2,
-          studyMeaning: 2,
-          concentration: 2,
-          efficacy: 3,
-          missedObligation: false,
-          lowRecovery: true,
-          supportScore: 5,
-          copingStrategy: 'PROCRASTINATION'
-        },
-        {
-          date: recentDate(0),
-          sleepHours: 5,
-          sleepQuality: 'POOR',
-          fatigue: 9,
-          stress: 9,
-          overload: 9,
-          motivation: 2,
-          studyMeaning: 2,
-          concentration: 2,
-          efficacy: 2,
-          missedObligation: true,
-          lowRecovery: false,
-          supportScore: 5,
-          copingStrategy: 'PROCRASTINATION'
-        }
-      ]
-    };
-
-    this.assessment = null;
-    this.submittedRequest = null;
-    this.errorMessage = '';
-  }
+  this.selectedManualScenario = 'severeBurnoutPattern';
+  this.loadSelectedManualScenario();
+}
 
   resetManualForm(): void {
     this.manualForm = {
@@ -329,6 +273,34 @@ export class App {
       }
     });
   }
+
+  private toManualForm(request: AssessmentRequest): ManualAssessmentForm {
+  return {
+    studentId: request.studentId,
+    profileType: request.profileType,
+    academicPeriod: request.academicPeriod,
+    dailyCheckIns: request.dailyCheckIns.map((day) => ({
+      date: this.toInputDate(day.timestamp),
+      sleepHours: day.sleepHours,
+      sleepQuality: day.sleepQuality,
+      fatigue: day.fatigue,
+      stress: day.stress,
+      overload: day.overload,
+      motivation: day.motivation,
+      studyMeaning: day.studyMeaning,
+      concentration: day.concentration,
+      efficacy: day.efficacy,
+      missedObligation: day.missedObligation,
+      lowRecovery: day.lowRecovery,
+      supportScore: day.supportScore,
+      copingStrategy: day.copingStrategy
+    }))
+  };
+}
+
+private toInputDate(timestamp: string): string {
+  return new Date(timestamp).toISOString().slice(0, 10);
+}
 
   private buildManualRequest(): AssessmentRequest {
     const dailyCheckIns: DailyCheckIn[] = this.manualForm.dailyCheckIns.map((day, index) => ({

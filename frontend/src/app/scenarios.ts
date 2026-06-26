@@ -239,7 +239,65 @@ export const scenarios: Record<string, DemoScenario> = {
         }
       ]
     }
-  }
+  },
+
+     templateExamPeriod: {
+    label: 'Template: exam period',
+    description: 'Same input as regular-classes template demo, but EXAM_PERIOD uses lowEfficacyThreshold = 5, so efficacy = 5 becomes risky.',
+    body: {
+      studentId: 'templateExamPeriod',
+      profileType: 'DEFAULT',
+      academicPeriod: 'EXAM_PERIOD',
+      dailyCheckIns: [
+        {
+          dayIndex: 1,
+          timestamp: recentTimestamp(0),
+          sleepHours: 5,
+          sleepQuality: 'POOR',
+          fatigue: 7,
+          stress: 7,
+          overload: 7,
+          motivation: 7,
+          studyMeaning: 7,
+          concentration: 7,
+          efficacy: 5,
+          missedObligation: false,
+          lowRecovery: false,
+          supportScore: 8,
+          copingStrategy: 'PLANNING'
+        }
+      ]
+    }
+  },
+
+  templateRegularClasses: {
+    label: 'Template: regular classes',
+    description: 'Same input as exam-period template demo, but REGULAR_CLASSES uses lowEfficacyThreshold = 4, so efficacy = 5 is not treated as reduced efficacy.',
+    body: {
+      studentId: 'templateRegularClasses',
+      profileType: 'DEFAULT',
+      academicPeriod: 'REGULAR_CLASSES',
+      dailyCheckIns: [
+        {
+          dayIndex: 1,
+          timestamp: recentTimestamp(0),
+          sleepHours: 5,
+          sleepQuality: 'POOR',
+          fatigue: 7,
+          stress: 7,
+          overload: 7,
+          motivation: 7,
+          studyMeaning: 7,
+          concentration: 7,
+          efficacy: 5,
+          missedObligation: false,
+          lowRecovery: false,
+          supportScore: 8,
+          copingStrategy: 'PLANNING'
+        }
+      ]
+    }
+  },
 };
 
 function recentTimestamp(daysAgo: number): string {

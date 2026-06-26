@@ -37,7 +37,7 @@
         (click)="selectView('demo')"
       >
         <lucide-angular [img]="FlaskConicalIcon" [size]="18"></lucide-angular>
-Demo scenarios
+Raw API request
       </button>
     </section>
 
@@ -49,10 +49,17 @@ Demo scenarios
             <p>Enter student context and one or more daily self-report records.</p>
           </div>
 
-          <button class="ghost-button" type="button" (click)="loadSevereManualExample()">
-            <lucide-angular [img]="ZapIcon" [size]="17"></lucide-angular>
-Load severe example
-          </button>
+<select
+  class="ghost-button example-select"
+  [(ngModel)]="selectedManualScenario"
+  (ngModelChange)="loadSelectedManualScenario()"
+>
+  <option value="" disabled hidden>Load prepared example...</option>
+
+  <option *ngFor="let key of scenarioKeys" [value]="key">
+    {{ scenarios[key].label }}
+  </option>
+</select>
         </div>
 
         <div class="form-grid three">
