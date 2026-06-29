@@ -15,7 +15,7 @@ when
 then
     insert(new DominantDimension(
         $sid,
-        "kombinovani obrazac: akademska iscrpljenost, cinizam/distanca i smanjena akademska efikasnost"
+        "combined pattern: academic exhaustion, cynicism/detachment and reduced academic efficacy"
     ));
 end
 
@@ -26,10 +26,10 @@ when
     CynicismIndicator(studentId == $sid)
     ReducedEfficacyIndicator(studentId == $sid)
     $d : DominantDimension(studentId == $sid,
-        value != "kombinovani obrazac: akademska iscrpljenost, cinizam/distanca i smanjena akademska efikasnost")
+        value != "combined pattern: academic exhaustion, cynicism/detachment and reduced academic efficacy")
 then
     modify($d) {
-        setValue("kombinovani obrazac: akademska iscrpljenost, cinizam/distanca i smanjena akademska efikasnost")
+        setValue("combined pattern: academic exhaustion, cynicism/detachment and reduced academic efficacy")
     }
 end
 
@@ -43,7 +43,7 @@ when
 then
     insert(new DominantDimension(
         $sid,
-        "akademska iscrpljenost i smanjena akademska efikasnost"
+        "academic exhaustion and reduced academic efficacy"
     ));
 end
 
@@ -57,7 +57,7 @@ when
 then
     insert(new DominantDimension(
         $sid,
-        "akademska iscrpljenost i cinizam/distanca prema studijama"
+        "academic exhaustion and cynicism/detachment toward studies"
     ));
 end
 
@@ -71,6 +71,6 @@ when
 then
     insert(new DominantDimension(
         $sid,
-        "cinizam/distanca prema studijama i smanjena akademska efikasnost"
+        "cynicism/detachment toward studies and reduced academic efficacy"
     ));
 end

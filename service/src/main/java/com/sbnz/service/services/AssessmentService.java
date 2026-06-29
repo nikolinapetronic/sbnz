@@ -52,8 +52,8 @@ public class AssessmentService {
 
             if (firedRules >= MAX_FIRED_RULES) {
                 throw new IllegalStateException(
-                        "Drools je aktivirao " + MAX_FIRED_RULES +
-                        " pravila. Moguca beskonacna petlja u pravilima."
+                "Drools fired " + MAX_FIRED_RULES +
+                " rules. This may indicate an infinite loop in the rule base."
                 );
             }
 
@@ -92,8 +92,8 @@ public class AssessmentService {
 
     private RiskAssessment createLowRiskAssessment(String studentId) {
         RiskAssessment assessment = new RiskAssessment(studentId, RiskLevel.LOW_RISK);
-        assessment.setDominantDimensions("nema izrazenog obrasca");
-        assessment.setExplanation("Nije detektovan dovoljan broj indikatora i vremenskih obrazaca za povisen rizik.");
+        assessment.setDominantDimensions("No dominant burnout pattern");
+        assessment.setExplanation("The assessment did not detect enough indicators or temporal patterns to classify the student as elevated risk.");
         return assessment;
     }
 

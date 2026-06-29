@@ -107,6 +107,46 @@ export class App {
   errorMessage = '';
   loading = false;
 
+    private readonly riskLevelLabels: Record<string, string> = {
+    LOW_RISK: 'Low risk',
+    MODERATE_RISK: 'Moderate risk',
+    HIGH_RISK: 'High risk',
+    SEVERE_RISK: 'Severe risk'
+  };
+
+  private readonly recommendationLabels: Record<string, string> = {
+    MONITOR_NEXT_7_DAYS: 'Monitor for the next 7 days',
+    REST_AND_RECOVERY: 'Rest and recovery',
+    STUDY_PLAN_RESTRUCTURING: 'Study plan restructuring',
+    SEEK_ACADEMIC_SUPPORT: 'Seek academic support',
+    SEEK_COUNSELING_SUPPORT: 'Seek counseling support'
+  };
+
+  private readonly evidenceLabels: Record<string, string> = {
+    ExhaustionIndicator: 'Academic exhaustion indicator',
+    CynicismIndicator: 'Cynicism/detachment indicator',
+    ReducedEfficacyIndicator: 'Reduced academic efficacy indicator',
+
+    ModerateRiskPattern: 'Moderate risk pattern',
+    ModerateRiskWithProtectiveFactorsPattern: 'Moderate risk with protective factors',
+    HighRiskPattern: 'High risk pattern',
+    HighRiskWithSupportResourcesPattern: 'High risk with support resources',
+    SevereRiskPattern: 'Severe risk pattern',
+
+    SustainedStressPattern: 'Sustained stress pattern',
+    SustainedPoorSleepPattern: 'Sustained poor sleep pattern',
+    LowRecoveryPattern: 'Low recovery pattern',
+    AvoidancePattern: 'Avoidance pattern',
+    RepeatedLowMotivationPattern: 'Repeated low motivation pattern',
+    AcademicGoalDeviationPattern: 'Academic goal deviation pattern',
+    BurnoutDevelopmentPattern: 'Burnout development pattern',
+    NegativeTrendPattern: 'Negative trend pattern',
+
+    ProtectiveSupportFactor: 'Protective support factor',
+    MaladaptiveCopingFactor: 'Maladaptive coping factor',
+    LowSupportFactor: 'Low support factor'
+  };
+
   profileTypes = [
     { value: 'DEFAULT', label: 'Default student' },
     { value: 'FRESHMAN', label: 'Freshman' },
@@ -239,6 +279,50 @@ loadSelectedManualScenario(): void {
     }
 
     return riskLevel.toLowerCase().replaceAll('_', '-');
+  }
+
+    formatRiskLevel(riskLevel: string | undefined): string {
+    if (!riskLevel) {
+      return '';
+    }
+
+    return this.riskLevelLabels[riskLevel] ?? this.formatEnumLabel(riskLevel);
+  }
+
+  formatRecommendation(recommendation: string): string {
+    return this.recommendationLabels[recommendation] ?? this.formatEnumLabel(recommendation);
+  }
+
+  formatEvidence(evidence: string): string {
+    return this.evidenceLabels[evidence] ?? this.formatCamelOrEnumLabel(evidence);
+  }
+
+  private formatEnumLabel(value: string): string {
+    return value
+      .toLowerCase()
+      .split('_')
+      .map((word) => this.capitalize(word))
+      .join(' ');
+  }
+
+  private formatCamelOrEnumLabel(value: string): string {
+    if (value.includes('_')) {
+      return this.formatEnumLabel(value);
+    }
+
+    return value
+      .replace(/([a-z])([A-Z])/g, '$1 $2')
+      .replace(/Pattern$/, ' pattern')
+      .replace(/Indicator$/, ' indicator')
+      .replace(/Factor$/, ' factor')
+      .split(' ')
+      .filter(Boolean)
+      .map((word) => this.capitalize(word))
+      .join(' ');
+  }
+
+  private capitalize(value: string): string {
+    return value.charAt(0).toUpperCase() + value.slice(1);
   }
 
   formatJson(value: unknown): string {

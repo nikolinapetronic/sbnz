@@ -365,7 +365,7 @@ Request body
         <div class="result" *ngIf="assessment">
           <div class="result-top">
             <div class="risk-badge" [ngClass]="getRiskClass(assessment.riskLevel)">
-              {{ assessment.riskLevel }}
+             {{ formatRiskLevel(assessment.riskLevel) }}
             </div>
 
             <div class="pattern-pill" [class.detected]="assessment.hasAcademicBurnoutPattern">
@@ -400,7 +400,7 @@ Request body
 
             <ul class="tag-list" *ngIf="assessment.activatedEvidence.length; else noEvidence">
               <li *ngFor="let item of assessment.activatedEvidence">
-                {{ item }}
+                {{ formatEvidence(item) }}
               </li>
             </ul>
 
@@ -417,7 +417,7 @@ Request body
               *ngIf="assessment.recommendations.length; else noRecommendations"
             >
               <li *ngFor="let item of assessment.recommendations">
-                {{ item }}
+                {{ formatRecommendation(item) }}
               </li>
             </ul>
 
