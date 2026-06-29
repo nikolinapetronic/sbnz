@@ -445,6 +445,12 @@ On pokazuje da sistem formira `ScoreSnapshotEvent` i detektuje pogoršanje kroz 
 
 ---
 
+### Napomena o datumima za CEP demo
+
+CEP pravila koriste vremenske prozore, npr. posljednjih 7 ili 10 dana. Zbog toga JSON fajlovi u `docs/demo-scenarios` predstavljaju statičke primjere ulaznih podataka i mogu zahtijevati ažuriranje `timestamp` vrijednosti prije ručnog slanja preko Postman-a ili curl-a.
+
+Za live demonstraciju na odbrani koriste se frontend prepared examples. U njima se `timestamp` vrijednosti računaju dinamički u odnosu na trenutni datum, pa događaji uvijek upadaju u CEP vremenske prozore.
+
 ## Napomena o admin/savjetnik ulozi
 
 U proposal-u je opisana i savjetnik/administrator uloga.
@@ -452,4 +458,5 @@ U proposal-u je opisana i savjetnik/administrator uloga.
 U ovoj implementaciji ne postoji poseban admin panel. Ta uloga je predstavljena kroz održavanje baze znanja i konfiguracionih pragova, prvenstveno kroz rule template podatke i generisanje `10_profile_thresholds.drl`.
 
 Drugim riječima, pragovi se ne mijenjaju kroz UI u runtime-u, nego kroz template podatke i regenerisanje pravila.
+
 ---
