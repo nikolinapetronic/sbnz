@@ -73,14 +73,14 @@ public class AssessmentService {
     }
 
     private List<DailyCheckInEvent> prepareEvents(AssessmentRequest request, String studentId) {
-        List<DailyCheckInEvent> events = new ArrayList<>(request.getDailyCheckIns());
+        List<DailyCheckInEvent> events = request.getDailyCheckIns() == null
+                ? new ArrayList<>()
+                : new ArrayList<>(request.getDailyCheckIns());
 
         events.sort(Comparator.comparing(DailyCheckInEvent::getDayIndex));
 
         for (DailyCheckInEvent event : events) {
-            if (event.getStudentId() == null || event.getStudentId().isBlank()) {
-                event.setStudentId(studentId);
-            }
+            event.setStudentId(studentId);
 
             if (event.getTimestamp() == null) {
                 event.setTimestamp(new Date());
