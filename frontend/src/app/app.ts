@@ -233,10 +233,19 @@ loadSelectedManualScenario(): void {
   }
 
   runManualAssessment(): void {
-    const request = this.buildManualRequest();
-    this.requestBody = this.formatJson(request);
-    this.submitAssessment(request);
+  const validationError = this.validateManualDailyRecords();
+
+  if (validationError) {
+    this.errorMessage = validationError;
+    this.assessment = null;
+    this.submittedRequest = null;
+    return;
   }
+
+  const request = this.buildManualRequest();
+  this.requestBody = this.formatJson(request);
+  this.submitAssessment(request);
+}
 
   addManualDay(): void {
     const lastDate = this.manualForm.dailyCheckIns.length
@@ -320,6 +329,24 @@ loadSelectedManualScenario(): void {
       .map((word) => this.capitalize(word))
       .join(' ');
   }
+
+  private validateManualDailyRecords(): string | null {
+  for (const [index, day] of this.manualForm.dailyCheckIns.entries()) {
+    const dayLabel = `Day ${index + 1}`;
+
+    if (!day.date) {
+      return `${dayLabel}: date is required.`;
+    }
+
+    const sleepHours = Number(day.sleepHours);
+
+    if (!Number.isFinite(sleepHours) || sleepHours < 0 || sleepHours > 14) {
+      return `${dayLabel}: sleep hours must be between 0 and 14.`;
+    }
+  }
+
+  return null;
+}
 
   private capitalize(value: string): string {
     return value.charAt(0).toUpperCase() + value.slice(1);

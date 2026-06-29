@@ -149,7 +149,7 @@ Remove
 </span>
 Date
               </label>
-              <input class="input" type="date" [(ngModel)]="day.date" />
+              <input class="input" type="date" [(ngModel)]="day.date" required />
             </div>
 
             <div class="form-field">
@@ -160,13 +160,14 @@ Date
 Sleep hours
               </label>
               <input
-                class="input"
-                type="number"
-                min="0"
-                max="14"
-                step="0.5"
-                [(ngModel)]="day.sleepHours"
-              />
+              class="input"
+              type="number"
+              min="0"
+              max="14"
+              step="0.5"
+              required
+              [(ngModel)]="day.sleepHours"
+            />
             </div>
 
             <div class="form-field">
