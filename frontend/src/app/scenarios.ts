@@ -70,15 +70,32 @@ export const scenarios: Record<string, DemoScenario> = {
   },
 
   moderateExamRisk: {
-    label: 'Moderate exam risk',
-    description: 'Template threshold demo: EXAM_PERIOD makes efficacy = 5 risky.',
+    label: 'Moderate risk',
+    description: 'Shows moderate academic burnout risk during an exam period, with warning signs present but protective support still detected.',
     body: {
-      studentId: 'templateExam',
+      studentId: 'studentModerate',
       profileType: 'DEFAULT',
       academicPeriod: 'EXAM_PERIOD',
       dailyCheckIns: [
         {
           dayIndex: 1,
+          timestamp: recentTimestamp(1),
+          sleepHours: 5,
+          sleepQuality: 'POOR',
+          fatigue: 8,
+          stress: 8,
+          overload: 8,
+          motivation: 7,
+          studyMeaning: 7,
+          concentration: 4,
+          efficacy: 5,
+          missedObligation: false,
+          lowRecovery: false,
+          supportScore: 8,
+          copingStrategy: 'PLANNING'
+        },
+        {
+          dayIndex: 2,
           timestamp: recentTimestamp(0),
           sleepHours: 5,
           sleepQuality: 'POOR',
@@ -165,7 +182,7 @@ export const scenarios: Record<string, DemoScenario> = {
     label: 'Severe burnout pattern',
     description: 'Full demo: forward chaining, CEP patterns, recursive backward chaining.',
     body: {
-      studentId: 'studentCep',
+      studentId: 'studentSevere',
       profileType: 'DEFAULT',
       academicPeriod: 'EXAM_PERIOD',
       dailyCheckIns: [

@@ -220,11 +220,6 @@ loadSelectedManualScenario(): void {
     this.errorMessage = '';
   }
 
-  loadSevereManualExample(): void {
-  this.selectedManualScenario = 'severeBurnoutPattern';
-  this.loadSelectedManualScenario();
-}
-
   resetManualForm(): void {
     this.manualForm = {
       studentId: 'studentManual',
@@ -361,10 +356,4 @@ private toInputDate(timestamp: string): string {
   private toBackendTimestamp(date: string): string {
     return new Date(`${date}T10:00:00.000Z`).toISOString();
   }
-}
-
-function recentDate(daysAgo: number): string {
-  const date = new Date();
-  date.setUTCDate(date.getUTCDate() - daysAgo);
-  return date.toISOString().split("T")[0];
 }
